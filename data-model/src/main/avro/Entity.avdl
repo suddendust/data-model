@@ -1,0 +1,26 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol EntityProtocol {
+  import idl "Attributes.avdl";
+
+  record EntityIds {
+    array<string> ids = [];
+  }
+
+  record Entity {
+    string customer_id;
+
+    // unique identifier of the entity that generated this span
+    union { null, string } entity_id = null;
+
+    // type of this entity e.g. service, pod etc
+    string entity_type;
+
+    // name of the entity (e.g myService, myPod etc)
+    union { null, string } entity_name = null;
+
+    // attributes that describe the entity (e.g. service labels, service version, lang etc)
+    union { null, Attributes } attributes = null;
+
+    union { null, EntityIds } related_entity_ids = null;
+  }
+}

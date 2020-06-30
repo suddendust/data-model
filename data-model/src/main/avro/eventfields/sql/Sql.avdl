@@ -1,0 +1,10 @@
+@namespace("org.hypertrace.core.datamodel.eventfields.sql")
+protocol SqlProtocol {
+  record Sql {
+    union { null, string } query = null;
+    union { null, string } db_type = null;
+    union { null, string } url = null;
+    union { null, string } params = null;
+    union { null, string } sqlstate = null;
+  }
+}

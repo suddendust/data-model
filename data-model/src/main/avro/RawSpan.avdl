@@ -1,0 +1,19 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol RawSpanProtocol {
+  import idl "Metrics.avdl";
+  import idl "Attributes.avdl";
+  import idl "Entity.avdl";
+  import idl "Event.avdl";
+
+  record RawSpan {
+    string customer_id;
+
+    bytes trace_id;
+
+    array<Entity> entity_list = [];
+
+    Event event;
+
+    long received_time_millis = 0;
+  }
+}

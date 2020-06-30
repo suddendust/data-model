@@ -1,0 +1,90 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol StructuredTraceProtocol {
+
+  import idl "Metrics.avdl";
+  import idl "Attributes.avdl";
+  import idl "Entity.avdl";
+  import idl "Event.avdl";
+
+  enum EdgeType {
+    EVENT_EVENT,
+    ENTITY_ENTITY,
+    ENTITY_EVENT
+  }
+
+  record Edge {
+
+    EdgeType edge_type;
+
+    /** depending on the EdgeType, this index can point to the element in the entity_nodes or the event_nodes array */
+    int src_index;
+
+    /** depending on the EdgeType, this index can point to the element in the entity_nodes or the event_nodes array */
+    int tgt_index;
+
+    /** Edge attributes that are common between the two nodes. request/response  e.g. api_name, url etc */
+    union { null, Attributes } attributes = null;
+
+    union { null, long } start_time_millis = null;
+
+    union { null, long } end_time_millis = null;
+
+    union { null, Metrics } metrics = null;
+
+  }
+
+  record Graph {
+
+    //ROOT NODE(S) representing either an entity or event
+    //Note: this is an array since there can be multiple root nodes for incomplete trace
+    //The int values refer to the index in events or entities in Structured Trace
+    array<int> root_nodes = [];
+
+    array<array<int>> adjacency_list = [];
+
+  }
+
+  record StructuredTrace {
+    string customer_id;
+
+    bytes trace_id;
+
+    // set of entity nodes that generate events (spans)
+    // For e.g. Service (Entity) generates Span (Event)
+    array<Entity> entity_list;
+
+    // Each event_node represents a Span
+    array<Event> event_list;
+
+    //Trace level attributes such as transaction_type, api_name, tags etc
+    union { null, Attributes } attributes = null;
+
+    // start time of the trace, got from the start time of the first span
+    long start_time_millis = -1;
+
+    // end time of the trace, got from the end time of the first span
+    long end_time_millis = -1;
+
+    // metrics at the trace level, for e.g. total_duration, call_depth, num_services
+    union { null, Metrics } metrics = null;
+
+    // ENTITY -> ENTITY Edge
+    // connecting edges between entities of the same type, e.g. service to service, pod to pod
+    array<Edge> entity_edge_list;
+
+    // EVENT -> EVENT Edge
+    // Equivalent to Dependency Link in tracing world
+    array<Edge> event_edge_list;
+
+    // ENTITY -> EVENT Edge
+    // e.g. Service to Span Edge
+    array<Edge> entity_event_edge_list;
+
+    // ADDITIONAL DATA STRUCTURES TO MAKE GRAPH TRAVERSAL EASY
+    union { null, Graph } entity_entity_graph = null;
+
+    union { null, Graph } event_event_graph = null;
+
+    union { null, Graph } entity_event_graph = null;
+  }
+}

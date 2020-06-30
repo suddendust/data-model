@@ -1,0 +1,14 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol AttributesProtocol {
+  record AttributeValue {
+    union { null, string } value = null;
+    union { null, bytes } binary_value = null;
+    union { null, array<string> } value_list = null;
+    union { null, map<string> }  value_map = null;
+  }
+
+  record Attributes {
+    map<AttributeValue> attribute_map = {};
+  }
+
+}

@@ -1,0 +1,50 @@
+@namespace("org.hypertrace.core.datamodel.eventfields.http")
+protocol HttpProtocol {
+  record RequestHeaders {
+    union { null, string } host = null;
+    union { null, string } authority = null;
+    union { null, string } content_type = null;
+    union { null, string } path = null;
+    union { null, string } x_forwarded_for = null;
+    union { null, string } user_agent = null;
+    union { null, string } cookie = null;
+    map<string> other_headers = {};
+  }
+
+  record Request {
+    union { null, string } url = null;
+    union { null, string } scheme = null;
+    union { null, string } host = null;
+    union { null, string } method = null;
+    union { null, string } path = null;
+    union { null, string } query_string = null;
+    union { null, string } body = null;
+    union { null, string } session_id = null;
+    array<string> cookies = [];
+    union { null, string } user_agent = null;
+    int size = 0;
+
+    union { null, RequestHeaders } headers = null;
+    map<string> params = {};
+  }
+
+  record ResponseHeaders {
+    union { null, string } content_type = null;
+    union { null, string } set_cookie = null;
+    map<string> other_headers = {};
+  }
+
+  record Response {
+    union { null, string } body = null;
+    int status_code = 0;
+    union { null, string } status_message = null;
+    int size = 0;
+    array<string> cookies = [];
+    union { null, ResponseHeaders } headers = null;
+  }
+
+  record Http {
+    union { null, Request } request = null;
+    union { null, Response } response = null;
+  }
+}

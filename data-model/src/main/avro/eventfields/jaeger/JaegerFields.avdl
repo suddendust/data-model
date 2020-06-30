@@ -1,0 +1,9 @@
+@namespace("org.hypertrace.core.datamodel.eventfields.jaeger")
+protocol JaegerFieldsProtocol {
+  record JaegerFields {
+    int flags = 0;
+    union { null, array<string> } logs = null;
+    union { null, array<string> } warnings = null;
+    union { null, string } service_name = null;
+  }
+}

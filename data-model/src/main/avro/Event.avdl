@@ -1,0 +1,60 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol EventProtocol {
+  import idl "Metrics.avdl";
+  import idl "Attributes.avdl";
+  import idl "eventfields/http/Http.avdl";
+  import idl "eventfields/grpc/Grpc.avdl";
+  import idl "eventfields/sql/Sql.avdl";
+  import idl "eventfields/jaeger/JaegerFields.avdl";
+
+  enum EventRefType {
+    CHILD_OF,
+    FOLLOWS_FROM
+  }
+
+  record EventRef {
+    //trace_id is needed here to support cross referencing traces.
+    bytes trace_id;
+    bytes event_id;
+    EventRefType ref_type;
+  }
+
+  //Equivalent to Span
+  record Event {
+    string customer_id;
+
+    //equivalent to span id
+    bytes event_id;
+
+    //equivalent to operation name
+    union { null, string } event_name = null;
+
+    // Entities associated with this Event.
+    // Event may be associated with multiple entities
+    array<string> entity_id_list = [];
+
+    // Raw attributes corresponding to this event that came from the original tracer.
+    union { null, Attributes } attributes = null;
+
+    //start time of the event
+    long start_time_millis = -1;
+
+    //end time of the event
+    long end_time_millis = -1;
+
+    //metrics such as total duration, payload size, etc
+    union { null, Metrics } metrics = null;
+
+    //References to other events that are related to this event either parent or sibling
+    array<EventRef> event_ref_list = [];
+
+    // Enriched attributes of this span event, that will be populated
+    // by different stages of our pipeline.
+    union { null, Attributes } enriched_attributes = null;
+
+    union { null, org.hypertrace.core.datamodel.eventfields.jaeger.JaegerFields } jaegerFields = null;
+    union { null, org.hypertrace.core.datamodel.eventfields.http.Http } http = null;
+    union { null, org.hypertrace.core.datamodel.eventfields.grpc.Grpc } grpc = null;
+    union { null, org.hypertrace.core.datamodel.eventfields.sql.Sql } sql = null;
+  }
+}

@@ -1,0 +1,14 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol MetricsProtocol {
+
+  record MetricValue {
+    union { null, double } value = null;
+    union { null, bytes } binary_value = null;
+    union { null, array<double> } value_list = null;
+    union { null, map<double> }  value_map = null;
+  }
+
+  record Metrics {
+    map<MetricValue> metric_map = {};
+  }
+}

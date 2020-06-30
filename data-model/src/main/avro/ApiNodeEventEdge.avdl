@@ -1,0 +1,29 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol ApiNodeEventEdgeProtocol {
+  import idl "Metrics.avdl";
+  import idl "Attributes.avdl";
+
+  record ApiNodeEventEdge {
+    /** Index in the StructuredTrace event list of the source event */
+    int src_event_index;
+
+    /** Index in the StructuredTrace event list of the target event */
+    int tgt_event_index;
+
+    /** Index in the ApiTraceGraph api node list of the source api node */
+    int src_api_node_index;
+
+    /** Index in the ApiTraceGraph api node list of the target api node */
+    int tgt_api_node_index;
+
+    /** Edge attributes copied over from the corresponding edge object in the StructuredTrace */
+    union { null, Attributes } attributes = null;
+
+    union { null, long } start_time_millis = null;
+
+    union { null, long } end_time_millis = null;
+
+    union { null, Metrics } metrics = null;
+
+  }
+}

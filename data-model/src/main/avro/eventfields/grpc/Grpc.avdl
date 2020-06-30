@@ -1,0 +1,26 @@
+@namespace("org.hypertrace.core.datamodel.eventfields.grpc")
+protocol GrpcProtocol {
+  record Request {
+    union { null, string } method = null;
+    union { null, string } host_port = null;
+    union { null, string } call_options = null;
+    union { null, string } body = null;
+    int size = 0;
+    map<string> metadata = {};
+  }
+
+  record Response {
+    union { null, string } body = null;
+    int size = 0;
+    int status_code = -1;
+    union { null, string } status_message = null;
+    union { null, string } error_name = null;
+    union { null, string } error_message = null;
+    map<string> metadata = {};
+  }
+
+  record Grpc {
+    union { null, Request } request = null;
+    union { null, Response } response = null;
+  }
+}
