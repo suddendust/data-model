@@ -56,5 +56,7 @@ protocol EventProtocol {
     union { null, org.hypertrace.core.datamodel.eventfields.http.Http } http = null;
     union { null, org.hypertrace.core.datamodel.eventfields.grpc.Grpc } grpc = null;
     union { null, org.hypertrace.core.datamodel.eventfields.sql.Sql } sql = null;
+
+    union { null, string } service_name = null;
   }
 }
