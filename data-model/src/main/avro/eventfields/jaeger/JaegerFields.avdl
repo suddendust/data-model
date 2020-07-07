@@ -4,6 +4,5 @@ protocol JaegerFieldsProtocol {
     int flags = 0;
     union { null, array<string> } logs = null;
     union { null, array<string> } warnings = null;
-    union { null, string } service_name = null;
   }
 }
