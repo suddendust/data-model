@@ -46,7 +46,6 @@ commands:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "/tmp/checksum.txt" }}
 
-# TODO: Re-enable avro compatibility check
 jobs:
   build:
     executor: java
@@ -54,9 +53,9 @@ jobs:
       - setup_build_environment
       - populate_and_save_cache
       - gradle:
-          args: build -x avroCompatibility
+          args: build
       - gradle:
-          args: jacocoTestReport -x avroCompatibility
+          args: jacocoTestReport
       - gradle:
           args: copyAllReports --output-dir=/tmp/test-reports
           when: always
