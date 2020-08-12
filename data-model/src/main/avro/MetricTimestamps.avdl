@@ -1,0 +1,12 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol MetricTimestampsProtocol {
+  record MetricTimestampRecord {
+    string metric_name;
+    long timestamp;
+  }
+
+  record MetricTimestamps {
+    array<MetricTimestampRecord> records = [];
+  }
+
+}

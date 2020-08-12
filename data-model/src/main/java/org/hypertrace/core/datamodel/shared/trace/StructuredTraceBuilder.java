@@ -20,6 +20,9 @@ import org.hypertrace.core.datamodel.Entity;
 import org.hypertrace.core.datamodel.Event;
 import org.hypertrace.core.datamodel.EventRef;
 import org.hypertrace.core.datamodel.EventRefType;
+
+import org.hypertrace.core.datamodel.MetricTimestampRecord;
+import org.hypertrace.core.datamodel.MetricTimestamps;
 import org.hypertrace.core.datamodel.MetricValue;
 import org.hypertrace.core.datamodel.Metrics;
 import org.hypertrace.core.datamodel.RawSpan;
@@ -389,7 +392,8 @@ public class StructuredTraceBuilder {
    */
   public static StructuredTrace buildStructuredTraceFromRawSpans(List<RawSpan> rawSpanList,
                                                                  ByteBuffer traceId,
-                                                                 String customerId) {
+                                                                 String customerId,
+                                                                 MetricTimestampRecord timestampRecord) {
     Map<String, Entity> entityMap = new HashMap<>();
     List<Event> eventList = new ArrayList<>();
     for (RawSpan rawSpan : rawSpanList) {
@@ -411,6 +415,10 @@ public class StructuredTraceBuilder {
         customerId,
         traceId);
 
+    if (timestampRecord != null) {
+      MetricTimestamps timestamps = new MetricTimestamps();
+      timestamps.setRecords(List.of(timestampRecord));
+    }
     return structuredTraceBuilder.buildStructuredTrace();
   }
 
