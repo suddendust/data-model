@@ -417,7 +417,9 @@ public class StructuredTraceBuilder {
 
     if (timestampRecord != null) {
       MetricTimestamps timestamps = new MetricTimestamps();
-      timestamps.setRecords(List.of(timestampRecord));
+      Map<String, MetricTimestampRecord> timestampMap = new HashMap<>();
+      timestampMap.put(timestampRecord.getMetricName(), timestampRecord);
+      timestamps.setRecords(timestampMap);
     }
     return structuredTraceBuilder.buildStructuredTrace();
   }

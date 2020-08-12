@@ -6,7 +6,7 @@ protocol MetricTimestampsProtocol {
   }
 
   record MetricTimestamps {
-    array<MetricTimestampRecord> records = [];
+    map<MetricTimestampRecord> records = {};
   }
 
 }
