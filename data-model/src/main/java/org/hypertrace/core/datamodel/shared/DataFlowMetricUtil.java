@@ -29,18 +29,15 @@ public final class DataFlowMetricUtil {
 
   /**
    * Inserts given {@link DataFlowMetrics} in the trace timeStamps record, with timestamp as current time.
+   * If insert new TimestampRecord only when DataFlowMetrics.CREATION_TIME is already present.
    * @param trace in which timestamp record will be added.
    * @param metric against for which timestamp will be added.
    */
   public static void insertTimestamp(StructuredTrace trace, DataFlowMetrics metric) {
-    if (trace.getTimestamps() != null ) {
+    if (trace.getTimestamps() != null && trace.getTimestamps().getRecords()
+        .containsKey(DataFlowMetrics.CREATION_TIME.toString())) {
       trace.getTimestamps().getRecords().put(metric.toString(), new TimestampRecord(metric.toString(),
           System.currentTimeMillis()));
-    } else {
-      TimestampRecord record = new TimestampRecord(metric.toString(), System.currentTimeMillis());
-      Timestamps timestamps = new Timestamps(new HashMap<>());
-      timestamps.getRecords().put(metric.toString(), record);
-      trace.setTimestamps(timestamps);
     }
   }
 

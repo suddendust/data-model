@@ -38,17 +38,11 @@ class DataFlowMetricUtilTest {
   }
 
   @Test
-  public void test_insertTimestamp_null() {
-    StructuredTrace trace = new StructuredTrace();
-    DataFlowMetricUtil.insertTimestamp(trace, DataFlowMetrics.CREATION_TIME);
-    assertNotNull(trace.getTimestamps());
-    assertTrue(trace.getTimestamps().getRecords().containsKey(DataFlowMetrics.CREATION_TIME.toString()));
-  }
-
-  @Test
-  public void test_insertTimestamp_notNull() {
+  public void test_insertTimestamp() {
     when(trace.getTimestamps()).thenReturn(timestamps);
     when(timestamps.getRecords()).thenReturn(recordMap);
+    when(record.getTimestamp()).thenReturn(System.currentTimeMillis());
+    recordMap.put(DataFlowMetrics.CREATION_TIME.toString(), record);
     DataFlowMetricUtil.insertTimestamp(trace, DataFlowMetrics.ENRICHMENT_ARRIVAL_LAG);
     assertTrue(trace.getTimestamps().getRecords().containsKey(DataFlowMetrics.ENRICHMENT_ARRIVAL_LAG.toString()));
   }

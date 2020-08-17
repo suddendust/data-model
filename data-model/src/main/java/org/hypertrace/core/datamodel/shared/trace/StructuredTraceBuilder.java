@@ -402,6 +402,12 @@ public class StructuredTraceBuilder {
    */
   public static StructuredTrace buildStructuredTraceFromRawSpans(List<RawSpan> rawSpanList,
                                                                  ByteBuffer traceId,
+                                                                 String customerId) {
+    return buildStructuredTraceFromRawSpans(rawSpanList, traceId, customerId, null);
+  }
+
+  public static StructuredTrace buildStructuredTraceFromRawSpans(List<RawSpan> rawSpanList,
+                                                                 ByteBuffer traceId,
                                                                  String customerId,
                                                                  TimestampRecord timestampRecord) {
     Map<String, Entity> entityMap = new HashMap<>();
