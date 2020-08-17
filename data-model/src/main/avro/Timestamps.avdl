@@ -1,0 +1,11 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol TimestampsProtocol {
+  record TimestampRecord {
+    string name;
+    long timestamp;
+  }
+
+  record Timestamps {
+    map<TimestampRecord> records = {};
+  }
+}
