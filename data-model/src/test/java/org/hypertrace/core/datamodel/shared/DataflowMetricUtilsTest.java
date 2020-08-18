@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -19,7 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class DataFlowMetricUtilTest {
+class DataflowMetricUtilsTest {
 
   StructuredTrace trace = mock(StructuredTrace.class);
   Timer timer = mock(Timer.class);
@@ -32,8 +31,8 @@ class DataFlowMetricUtilTest {
     when(trace.getTimestamps()).thenReturn(timestamps);
     when(timestamps.getRecords()).thenReturn(recordMap);
     when(record.getTimestamp()).thenReturn(System.currentTimeMillis());
-    recordMap.put(DataFlowMetrics.CREATION_TIME.toString(), record);
-    DataFlowMetricUtil.reportArrivalLag(trace, timer);
+    recordMap.put(DataflowMetric.CREATION_TIME.toString(), record);
+    DataflowMetricUtils.reportArrivalLag(trace, timer);
     verify(timer, times(1)).record(anyLong(), any(TimeUnit.class));
   }
 
@@ -42,8 +41,8 @@ class DataFlowMetricUtilTest {
     when(trace.getTimestamps()).thenReturn(timestamps);
     when(timestamps.getRecords()).thenReturn(recordMap);
     when(record.getTimestamp()).thenReturn(System.currentTimeMillis());
-    recordMap.put(DataFlowMetrics.CREATION_TIME.toString(), record);
-    DataFlowMetricUtil.insertTimestamp(trace, DataFlowMetrics.ENRICHMENT_ARRIVAL_LAG);
-    assertTrue(trace.getTimestamps().getRecords().containsKey(DataFlowMetrics.ENRICHMENT_ARRIVAL_LAG.toString()));
+    recordMap.put(DataflowMetric.CREATION_TIME.toString(), record);
+    DataflowMetricUtils.insertTimestamp(trace, DataflowMetric.ENRICHMENT_ARRIVAL_TIME);
+    assertTrue(trace.getTimestamps().getRecords().containsKey(DataflowMetric.ENRICHMENT_ARRIVAL_TIME.toString()));
   }
 }
