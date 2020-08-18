@@ -25,6 +25,8 @@ import org.hypertrace.core.datamodel.Metrics;
 import org.hypertrace.core.datamodel.RawSpan;
 import org.hypertrace.core.datamodel.StructuredTrace;
 import org.hypertrace.core.datamodel.StructuredTrace.Builder;
+import org.hypertrace.core.datamodel.TimestampRecord;
+import org.hypertrace.core.datamodel.Timestamps;
 import org.hypertrace.core.datamodel.shared.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +54,21 @@ public class StructuredTraceBuilder {
   private final BiMap<String, Integer> entityIdMapping;
   private final BiMap<ByteBuffer, Integer> eventIdMapping;
   private final Set<ByteBuffer> missingEventIdSet;
+  private final Timestamps timestamps;
 
   public StructuredTraceBuilder(
       List<Event> eventList,
       Map<String, Entity> entityMap,
       String customerId,
       ByteBuffer traceId) {
+    this(eventList, entityMap, customerId, traceId, null);
+  }
+
+  public StructuredTraceBuilder(
+      List<Event> eventList,
+      Map<String, Entity> entityMap,
+      String customerId,
+      ByteBuffer traceId, Timestamps timestamps) {
     this.eventList = eventList;
     this.customerId = customerId;
     this.traceId = traceId;
@@ -72,6 +83,7 @@ public class StructuredTraceBuilder {
     isPartialTrace = false;
     traceStartTime = Long.MAX_VALUE;
     traceEndTime = Long.MIN_VALUE;
+    this.timestamps = timestamps;
   }
 
   public StructuredTrace buildStructuredTrace() {
@@ -238,6 +250,7 @@ public class StructuredTraceBuilder {
     builder.setEndTimeMillis(traceEndTime);
     builder.setAttributes(new Attributes(attributeMap));
     builder.setMetrics(new Metrics(metricMap));
+    builder.setTimestamps(timestamps);
     return builder.build();
   }
 
@@ -390,6 +403,13 @@ public class StructuredTraceBuilder {
   public static StructuredTrace buildStructuredTraceFromRawSpans(List<RawSpan> rawSpanList,
                                                                  ByteBuffer traceId,
                                                                  String customerId) {
+    return buildStructuredTraceFromRawSpans(rawSpanList, traceId, customerId, null);
+  }
+
+  public static StructuredTrace buildStructuredTraceFromRawSpans(List<RawSpan> rawSpanList,
+                                                                 ByteBuffer traceId,
+                                                                 String customerId,
+                                                                 TimestampRecord timestampRecord) {
     Map<String, Entity> entityMap = new HashMap<>();
     List<Event> eventList = new ArrayList<>();
     for (RawSpan rawSpan : rawSpanList) {
@@ -405,11 +425,21 @@ public class StructuredTraceBuilder {
         }
       }
     }
+
+    Timestamps timestamps = null;
+    if (timestampRecord != null) {
+      timestamps = new Timestamps();
+      Map<String, TimestampRecord> timestampMap = new HashMap<>();
+      timestampMap.put(timestampRecord.getName(), timestampRecord);
+      timestamps.setRecords(timestampMap);
+    }
+
     StructuredTraceBuilder structuredTraceBuilder = new StructuredTraceBuilder(
         eventList,
         entityMap,
         customerId,
-        traceId);
+        traceId,
+        timestamps);
 
     return structuredTraceBuilder.buildStructuredTrace();
   }

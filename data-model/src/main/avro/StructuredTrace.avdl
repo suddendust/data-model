@@ -5,6 +5,7 @@ protocol StructuredTraceProtocol {
   import idl "Attributes.avdl";
   import idl "Entity.avdl";
   import idl "Event.avdl";
+  import idl "Timestamps.avdl";
 
   enum EdgeType {
     EVENT_EVENT,
@@ -86,5 +87,7 @@ protocol StructuredTraceProtocol {
     union { null, Graph } event_event_graph = null;
 
     union { null, Graph } entity_event_graph = null;
+
+    union { null, Timestamps } timestamps = null;
   }
 }
