@@ -5,7 +5,8 @@ package org.hypertrace.core.datamodel.shared;
  * components.
  */
 public enum DataflowMetric {
-  CREATION_TIME("creation.time"),
+  SPAN_ARRIVAL_TIME("span.arrival.time"),
+  TRACE_CREATION_TIME("trace.creation.time"),
   ENRICHMENT_ARRIVAL_TIME("enrichment.arrival.time"),
   VIEW_GENERATION_ARRIVAL_TIME("view.generation.arrival.time");
 

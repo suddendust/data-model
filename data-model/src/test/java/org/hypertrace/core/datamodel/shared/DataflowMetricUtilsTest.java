@@ -31,7 +31,7 @@ class DataflowMetricUtilsTest {
     when(trace.getTimestamps()).thenReturn(timestamps);
     when(timestamps.getRecords()).thenReturn(recordMap);
     when(record.getTimestamp()).thenReturn(System.currentTimeMillis());
-    recordMap.put(DataflowMetric.CREATION_TIME.toString(), record);
+    recordMap.put(DataflowMetric.SPAN_ARRIVAL_TIME.toString(), record);
     DataflowMetricUtils.reportArrivalLag(trace, timer);
     verify(timer, times(1)).record(anyLong(), any(TimeUnit.class));
   }
@@ -41,7 +41,7 @@ class DataflowMetricUtilsTest {
     when(trace.getTimestamps()).thenReturn(timestamps);
     when(timestamps.getRecords()).thenReturn(recordMap);
     when(record.getTimestamp()).thenReturn(System.currentTimeMillis());
-    recordMap.put(DataflowMetric.CREATION_TIME.toString(), record);
+    recordMap.put(DataflowMetric.SPAN_ARRIVAL_TIME.toString(), record);
     DataflowMetricUtils.insertTimestamp(trace, DataflowMetric.ENRICHMENT_ARRIVAL_TIME);
     assertTrue(trace.getTimestamps().getRecords().containsKey(DataflowMetric.ENRICHMENT_ARRIVAL_TIME.toString()));
   }

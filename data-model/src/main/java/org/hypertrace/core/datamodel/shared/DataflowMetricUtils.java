@@ -12,15 +12,15 @@ import java.util.concurrent.TimeUnit;
 public final class DataflowMetricUtils {
 
   /**
-   * Compares current time against creation time of trace and reports that a lag via supplied timer.
+   * Compares current time against span arrival time of trace and reports that a lag via supplied timer.
    * @param trace whose with creation time.
    * @param timer which will be used to report the lag.
    */
   public static void reportArrivalLag(StructuredTrace trace, Timer timer) {
     if (trace.getTimestamps() != null && trace.getTimestamps().getRecords()
-        .containsKey(DataflowMetric.CREATION_TIME.toString())) {
+        .containsKey(DataflowMetric.SPAN_ARRIVAL_TIME.toString())) {
       timer.record(System.currentTimeMillis() -
-              trace.getTimestamps().getRecords().get(DataflowMetric.CREATION_TIME.toString()).getTimestamp(),
+              trace.getTimestamps().getRecords().get(DataflowMetric.SPAN_ARRIVAL_TIME.toString()).getTimestamp(),
           TimeUnit.MILLISECONDS);
     }
   }
@@ -33,7 +33,7 @@ public final class DataflowMetricUtils {
    */
   public static void insertTimestamp(StructuredTrace trace, DataflowMetric metric) {
     if (trace.getTimestamps() != null && trace.getTimestamps().getRecords()
-        .containsKey(DataflowMetric.CREATION_TIME.toString())) {
+        .containsKey(DataflowMetric.SPAN_ARRIVAL_TIME.toString())) {
       trace.getTimestamps().getRecords().put(metric.toString(), new TimestampRecord(metric.toString(),
           System.currentTimeMillis()));
     }
