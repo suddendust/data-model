@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
  */
 public final class DataflowMetricUtils {
 
+  public static final String SPAN_ARRIVAL_TIME = "span.arrival.time";
+  public static final String ARRIVAL_LAG = "arrival.lag";
+
   /**
    * Compares current time against span arrival time of trace and reports that a lag via supplied timer.
    * @param trace whose with creation time.
@@ -18,24 +21,23 @@ public final class DataflowMetricUtils {
    */
   public static void reportArrivalLag(StructuredTrace trace, Timer timer) {
     if (trace.getTimestamps() != null && trace.getTimestamps().getRecords()
-        .containsKey(DataflowMetric.SPAN_ARRIVAL_TIME.toString())) {
+        .containsKey(SPAN_ARRIVAL_TIME)) {
       timer.record(System.currentTimeMillis() -
-              trace.getTimestamps().getRecords().get(DataflowMetric.SPAN_ARRIVAL_TIME.toString()).getTimestamp(),
+              trace.getTimestamps().getRecords().get(SPAN_ARRIVAL_TIME).getTimestamp(),
           TimeUnit.MILLISECONDS);
     }
   }
 
   /**
-   * Inserts given {@link DataflowMetric} in the trace timeStamps record, with timestamp as current time.
-   * If insert new TimestampRecord only when DataflowMetric.CREATION_TIME is already present.
+   * Inserts given metric in the trace timeStamps record, with timestamp as current time.
+   * If insert new TimestampRecord only when SPAN_ARRIVAL_TIME is already present.
    * @param trace in which timestamp record will be added.
-   * @param metric against for which timestamp will be added.
+   * @param metricName against for which timestamp will be added.
    */
-  public static void insertTimestamp(StructuredTrace trace, DataflowMetric metric) {
+  public static void insertTimestamp(StructuredTrace trace, String metricName) {
     if (trace.getTimestamps() != null && trace.getTimestamps().getRecords()
-        .containsKey(DataflowMetric.SPAN_ARRIVAL_TIME.toString())) {
-      trace.getTimestamps().getRecords().put(metric.toString(), new TimestampRecord(metric.toString(),
-          System.currentTimeMillis()));
+        .containsKey(SPAN_ARRIVAL_TIME)) {
+      trace.getTimestamps().getRecords().put(metricName, new TimestampRecord(metricName, System.currentTimeMillis()));
     }
   }
 
@@ -43,11 +45,11 @@ public final class DataflowMetricUtils {
    * Wrapper to call reportArrivalLag and insertTimestamp.
    * @param trace trace
    * @param timer times
-   * @param metric metric
+   * @param metricName metric
    */
   public static void reportArrivalLagAndInsertTimestamp(StructuredTrace trace, Timer timer,
-                                                        DataflowMetric metric) {
+                                                        String metricName) {
     reportArrivalLag(trace, timer);
-    insertTimestamp(trace, metric);
+    insertTimestamp(trace, metricName);
   }
 }
