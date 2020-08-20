@@ -409,7 +409,7 @@ public class StructuredTraceBuilder {
   public static StructuredTrace buildStructuredTraceFromRawSpans(List<RawSpan> rawSpanList,
                                                                  ByteBuffer traceId,
                                                                  String customerId,
-                                                                 TimestampRecord timestampRecord) {
+                                                                 Timestamps timestamps) {
     Map<String, Entity> entityMap = new HashMap<>();
     List<Event> eventList = new ArrayList<>();
     for (RawSpan rawSpan : rawSpanList) {
@@ -424,14 +424,6 @@ public class StructuredTraceBuilder {
           mergeAttributes(existingEntity, entity);
         }
       }
-    }
-
-    Timestamps timestamps = null;
-    if (timestampRecord != null) {
-      timestamps = new Timestamps();
-      Map<String, TimestampRecord> timestampMap = new HashMap<>();
-      timestampMap.put(timestampRecord.getName(), timestampRecord);
-      timestamps.setRecords(timestampMap);
     }
 
     StructuredTraceBuilder structuredTraceBuilder = new StructuredTraceBuilder(

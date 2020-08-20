@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 class DataflowMetricUtilsTest {
 
+  private static final String SPAN_ARRIVAL_TIME = "span.arrival.time";
   StructuredTrace trace = mock(StructuredTrace.class);
   Timer timer = mock(Timer.class);
   Timestamps timestamps = mock(Timestamps.class);
@@ -31,7 +32,7 @@ class DataflowMetricUtilsTest {
     when(trace.getTimestamps()).thenReturn(timestamps);
     when(timestamps.getRecords()).thenReturn(recordMap);
     when(record.getTimestamp()).thenReturn(System.currentTimeMillis());
-    recordMap.put(DataflowMetric.CREATION_TIME.toString(), record);
+    recordMap.put(SPAN_ARRIVAL_TIME, record);
     DataflowMetricUtils.reportArrivalLag(trace, timer);
     verify(timer, times(1)).record(anyLong(), any(TimeUnit.class));
   }
@@ -41,8 +42,8 @@ class DataflowMetricUtilsTest {
     when(trace.getTimestamps()).thenReturn(timestamps);
     when(timestamps.getRecords()).thenReturn(recordMap);
     when(record.getTimestamp()).thenReturn(System.currentTimeMillis());
-    recordMap.put(DataflowMetric.CREATION_TIME.toString(), record);
-    DataflowMetricUtils.insertTimestamp(trace, DataflowMetric.ENRICHMENT_ARRIVAL_TIME);
-    assertTrue(trace.getTimestamps().getRecords().containsKey(DataflowMetric.ENRICHMENT_ARRIVAL_TIME.toString()));
+    recordMap.put(SPAN_ARRIVAL_TIME, record);
+    DataflowMetricUtils.insertTimestamp(trace, "test.metric");
+    assertTrue(trace.getTimestamps().getRecords().containsKey("test.metric"));
   }
 }
