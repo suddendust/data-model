@@ -25,7 +25,6 @@ import org.hypertrace.core.datamodel.Metrics;
 import org.hypertrace.core.datamodel.RawSpan;
 import org.hypertrace.core.datamodel.StructuredTrace;
 import org.hypertrace.core.datamodel.StructuredTrace.Builder;
-import org.hypertrace.core.datamodel.TimestampRecord;
 import org.hypertrace.core.datamodel.Timestamps;
 import org.hypertrace.core.datamodel.shared.HexUtils;
 import org.slf4j.Logger;
@@ -342,14 +341,14 @@ public class StructuredTraceBuilder {
         //or this referenced event belongs to another trace as of now
         LOGGER.debug(
             "Skipping referenced event since it belongs to another trace. EventRef.TraceId = {}  event.TraceId={}",
-            eventRef.getTraceId(), traceId);
+            HexUtils.getHex(eventRef.getTraceId()), HexUtils.getHex(traceId));
 
         continue;
       }
       if (!eventMap.containsKey(eventRef.getEventId())) {
         LOGGER.debug(
-            "Referenced eventId:{} is not part of the Trace. May be partial trace. ",
-            eventRef.getTraceId());
+            "Referenced eventId:{} is not part of the Trace {}. May be partial trace. ",
+            HexUtils.getHex(eventRef.getEventId()), HexUtils.getHex(eventRef.getTraceId()));
         isPartialTrace = true;
         missingEventIdSet.add(eventRef.getEventId());
         //TODO: consider creating an empty event node?
