@@ -16,4 +16,8 @@ protocol RawSpanProtocol {
 
     long received_time_millis = 0;
   }
+
+  record RawSpans {
+    array<RawSpan> raw_spans = [];
+  }
 }
