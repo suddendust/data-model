@@ -10,6 +10,10 @@ public class HexUtils {
   }
 
   public static String getHex(ByteBuffer buffer) {
+    return getHex(getBytes(buffer));
+  }
+
+  public static byte[] getBytes(ByteBuffer buffer) {
     // Mark the buffer so that we can reset it later.
     buffer.mark();
     try {
@@ -17,7 +21,7 @@ public class HexUtils {
       buffer.position(0);
       byte[] bytes = new byte[buffer.remaining()];
       buffer.get(bytes);
-      return getHex(bytes);
+      return bytes;
     } finally {
       // Always reset the mark.
       buffer.reset();

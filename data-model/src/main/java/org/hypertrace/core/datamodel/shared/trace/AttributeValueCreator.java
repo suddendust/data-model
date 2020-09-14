@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.hypertrace.core.datamodel.AttributeValue;
+import org.hypertrace.core.datamodel.shared.HexUtils;
 
 public class AttributeValueCreator {
 
@@ -27,9 +28,7 @@ public class AttributeValueCreator {
   public static AttributeValue createFromByteBuffers(Set<ByteBuffer> values) {
     List<String> list = new ArrayList<>();
     values.forEach(value -> {
-      byte[] buf = new byte[value.remaining()];
-      value.get(buf);
-      list.add(new String(buf));
+      list.add(new String(HexUtils.getBytes(value)));
     });
     return AttributeValue.newBuilder().setValueList(list).build();
   }

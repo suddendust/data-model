@@ -174,8 +174,10 @@ public class StructuredTraceBuilder {
     }
     StructuredTrace structuredTrace = build();
     long execEndTime = System.currentTimeMillis();
-    LOGGER.debug("Generated structuredTrace from events list in {} ms. Output = {}",
-        (execEndTime - execStartTime), structuredTrace);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Generated structuredTrace from events list in {} ms. Output = {}",
+          (execEndTime - execStartTime), structuredTrace);
+    }
     return structuredTrace;
   }
 
@@ -339,16 +341,24 @@ public class StructuredTraceBuilder {
       if (!eventRef.getTraceId().equals(traceId)) {
         //either this is an incomplete trace
         //or this referenced event belongs to another trace as of now
-        LOGGER.debug(
-            "Skipping referenced event since it belongs to another trace. EventRef.TraceId = {}  event.TraceId={}",
-            HexUtils.getHex(eventRef.getTraceId()), HexUtils.getHex(traceId));
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug(
+              "Skipping referenced event since it belongs to another trace. EventRef.TraceId = {}  event.TraceId={}",
+              HexUtils.getHex(eventRef.getTraceId()),
+              HexUtils.getHex(traceId)
+          );
+        }
 
         continue;
       }
       if (!eventMap.containsKey(eventRef.getEventId())) {
-        LOGGER.debug(
-            "Referenced eventId:{} is not part of the Trace {}. May be partial trace. ",
-            HexUtils.getHex(eventRef.getEventId()), HexUtils.getHex(eventRef.getTraceId()));
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug(
+              "Referenced eventId:{} is not part of the Trace {}. May be partial trace.",
+              HexUtils.getHex(eventRef.getEventId()),
+              HexUtils.getHex(eventRef.getTraceId())
+          );
+        }
         isPartialTrace = true;
         missingEventIdSet.add(eventRef.getEventId());
         //TODO: consider creating an empty event node?
