@@ -4,6 +4,7 @@ protocol EventProtocol {
   import idl "Attributes.avdl";
   import idl "eventfields/http/Http.avdl";
   import idl "eventfields/grpc/Grpc.avdl";
+  import idl "eventfields/rpc/Rpc.avdl";
   import idl "eventfields/sql/Sql.avdl";
   import idl "eventfields/jaeger/JaegerFields.avdl";
 
@@ -58,5 +59,8 @@ protocol EventProtocol {
     union { null, org.hypertrace.core.datamodel.eventfields.sql.Sql } sql = null;
 
     union { null, string } service_name = null;
+
+    // Rpc attributes for service, method and system corresponding to Otel tags
+    union { null, org.hypertrace.core.datamodel.eventfields.rpc.Rpc } rpc = null;
   }
 }

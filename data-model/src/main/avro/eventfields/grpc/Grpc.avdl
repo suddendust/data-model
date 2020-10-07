@@ -1,5 +1,14 @@
 @namespace("org.hypertrace.core.datamodel.eventfields.grpc")
 protocol GrpcProtocol {
+  record RequestMetadata {
+    union { null, string } authority = null;
+    union { null, string } content_type = null;
+    union { null, string } path = null;
+    union { null, string } x_forwarded_for = null;
+    union { null, string } user_agent = null;
+    map<string> other_metadata = {};
+  }
+
   record Request {
     union { null, string } method = null;
     union { null, string } host_port = null;
@@ -7,6 +16,13 @@ protocol GrpcProtocol {
     union { null, string } body = null;
     int size = 0;
     map<string> metadata = {};
+
+    union { null, RequestMetadata } request_metadata = null;
+  }
+
+  record ResponseMetadata {
+    union { null, string } content_type = null;
+    map<string> other_metadata = {};
   }
 
   record Response {
@@ -17,6 +33,8 @@ protocol GrpcProtocol {
     union { null, string } error_name = null;
     union { null, string } error_message = null;
     map<string> metadata = {};
+
+    union { null, ResponseMetadata } response_metadata = null;
   }
 
   record Grpc {

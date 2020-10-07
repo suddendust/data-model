@@ -1,0 +1,8 @@
+@namespace("org.hypertrace.core.datamodel.eventfields.rpc")
+protocol RpcProtocol {
+  record Rpc {
+    union { null, string } system = null;
+    union { null, string } service = null;
+    union { null, string } method = null;
+  }
+}
