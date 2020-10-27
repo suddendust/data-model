@@ -15,7 +15,7 @@ dependencies {
   api("commons-codec:commons-codec:1.14")
   api("io.micrometer:micrometer-core:1.5.3")
 
-  implementation("com.google.guava:guava:29.0-jre")
+  implementation("com.google.guava:guava:30.0-jre")
   implementation("org.apache.commons:commons-lang3:3.10")
 
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
