@@ -11,7 +11,7 @@ tasks.test {
 }
 
 dependencies {
-  api("org.apache.avro:avro:1.9.2")
+  api("org.apache.avro:avro:1.10.1")
   api("commons-codec:commons-codec:1.14")
   api("io.micrometer:micrometer-core:1.5.3")
 
