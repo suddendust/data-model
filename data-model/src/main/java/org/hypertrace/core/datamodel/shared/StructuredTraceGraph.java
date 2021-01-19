@@ -1,13 +1,13 @@
 package org.hypertrace.core.datamodel.shared;
 
-import com.google.common.collect.ImmutableSet;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.hypertrace.core.datamodel.Edge;
 import org.hypertrace.core.datamodel.Entity;
@@ -20,22 +20,20 @@ import org.hypertrace.core.datamodel.StructuredTrace;
  */
 public class StructuredTraceGraph {
 
-  private final Map<ByteBuffer, Event> eventMap;
-  private final Map<String, Entity> entityMap;
-
   /* there could be multiple roots for partial trace and incomplete instrumented app spans */
-  private final Map<Event, List<Event>> parentToChildrenEvents;
-  private final Map<Event, Event> childToParentEvents;
+  private final Map<ByteBuffer, List<Event>> parentToChildrenEvents;
+  private final Map<ByteBuffer, Event> childToParentEvents;
   /* entity have many-to-many relationship */
-  private final Map<Entity, List<Entity>> parentToChildrenEntities;
-  private final Map<Entity, List<Entity>> childToParentEntities;
+  private final Map<String, List<Entity>> parentToChildrenEntities;
+  private final Map<String, List<Entity>> childToParentEntities;
 
+  /* these containers should be unmodifiable after initialization as we're exposing them via getters */
+  private Map<ByteBuffer, Event> eventMap;
+  private Map<String, Entity> entityMap;
   private Set<Event> rootEvents;
   private Set<Entity> rootEntities;
 
   private StructuredTraceGraph() {
-    this.eventMap = new HashMap<>();
-    this.entityMap = new HashMap<>();
     this.childToParentEntities = new HashMap<>();
     this.parentToChildrenEntities = new HashMap<>();
     this.childToParentEvents = new HashMap<>();
@@ -48,38 +46,59 @@ public class StructuredTraceGraph {
    */
   public static StructuredTraceGraph createGraph(StructuredTrace trace) {
     StructuredTraceGraph graph = new StructuredTraceGraph();
+    graph.buildEventMap(trace);
+    graph.buildEntityMap(trace);
     graph.buildParentChildRelationship(trace);
     graph.buildRootEvents(trace);
     graph.buildRootEntities(trace);
     return graph;
   }
 
+  /**
+   * @return an immutable set containing the root events
+   */
   public Set<Event> getRootEvents() {
-    return ImmutableSet.copyOf(rootEvents);
+    return rootEvents;
   }
 
+  /**
+   * @return an immutable set containing the root entities
+   */
   public Set<Entity> getRootEntities() {
-    return ImmutableSet.copyOf(rootEntities);
+    return rootEntities;
   }
 
   public Event getParentEvent(Event event) {
-    return childToParentEvents.get(event);
+    return childToParentEvents.get(event.getEventId());
   }
 
   public List<Entity> getParentEntities(Entity entity) {
-    return childToParentEntities.get(entity);
+    return childToParentEntities.get(entity.getEntityId());
   }
 
   public List<Event> getChildrenEvents(Event event) {
-    return parentToChildrenEvents.get(event);
+    return parentToChildrenEvents.get(event.getEventId());
   }
 
   public List<Entity> getChildrenEntities(Entity entity) {
-    return parentToChildrenEntities.get(entity);
+    return parentToChildrenEntities.get(entity.getEntityId());
   }
 
+  /**
+   * @return an immutable map of entity ids to entities
+   */
   public Map<String, Entity> getEntityMap() {
     return entityMap;
+  }
+
+  private void buildEventMap(StructuredTrace trace) {
+    eventMap = trace.getEventList().stream()
+        .collect(Collectors.toUnmodifiableMap(Event::getEventId, Function.identity()));
+  }
+
+  private void buildEntityMap(StructuredTrace trace) {
+    entityMap = trace.getEntityList().stream()
+        .collect(Collectors.toUnmodifiableMap(Entity::getEntityId, Function.identity()));
   }
 
   private void buildParentChildRelationship(StructuredTrace trace) {
@@ -90,11 +109,6 @@ public class StructuredTraceGraph {
     }
 
     List<Entity> entities = trace.getEntityList();
-
-    for (Event event : events) {
-      eventMap.put(event.getEventId(), event);
-    }
-
     List<Edge> eventEdges = trace.getEventEdgeList();
     if (eventEdges != null) {
       for (Edge edge : trace.getEventEdgeList()) {
@@ -102,19 +116,15 @@ public class StructuredTraceGraph {
         Integer targetIndex = edge.getTgtIndex();
         Event parentEvent = events.get(sourceIndex);
         Event childEvent = events.get(targetIndex);
-        parentToChildrenEvents.putIfAbsent(parentEvent, new ArrayList<>());
-        parentToChildrenEvents.get(parentEvent).add(childEvent);
-        childToParentEvents.put(childEvent, parentEvent);
+        parentToChildrenEvents.computeIfAbsent(parentEvent.getEventId(), k -> new ArrayList<>())
+            .add(childEvent);
+        childToParentEvents.put(childEvent.getEventId(), parentEvent);
       }
     }
 
     // return for now, we don't forsee this is to be null.
     if (entities == null) {
       return;
-    }
-
-    for (Entity entity : entities) {
-      entityMap.put(entity.getEntityId(), entity);
     }
 
     List<Edge> entityEdges = trace.getEntityEdgeList();
@@ -124,32 +134,46 @@ public class StructuredTraceGraph {
         Integer targetIndex = entityEdge.getTgtIndex();
         Entity parentEntity = entities.get(sourceIndex);
         Entity childEntity = entities.get(targetIndex);
-        parentToChildrenEntities.putIfAbsent(parentEntity, new ArrayList<>());
-        parentToChildrenEntities.get(parentEntity).add(childEntity);
-        childToParentEntities.putIfAbsent(childEntity, new ArrayList<>());
-        childToParentEntities.get(childEntity).add(parentEntity);
+        parentToChildrenEntities.computeIfAbsent(parentEntity.getEntityId(), k -> new ArrayList<>())
+            .add(childEntity);
+        childToParentEntities.computeIfAbsent(childEntity.getEntityId(), k -> new ArrayList<>())
+            .add(parentEntity);
       }
     }
   }
 
   private void buildRootEvents(StructuredTrace trace) {
-    // build the root entities
-    rootEvents = new HashSet<>(trace.getEventList());
+    // build the root event ids
+    Set<ByteBuffer> rootEventIds = trace.getEventList().stream().map(Event::getEventId)
+        .collect(Collectors.toSet());
+
     // remove all the children, and what's remaining are the events without children
     // we will consider these are roots, including the ones that are standalone
-    for (List<Event> childEvents : parentToChildrenEvents.values()) {
-      rootEvents.removeAll(childEvents);
-    }
+    Set<ByteBuffer> childrenEventIds = parentToChildrenEvents.values().stream()
+        .flatMap(l -> l.stream().map(Event::getEventId)).collect(Collectors.toSet());
+    rootEventIds.removeAll(childrenEventIds);
+
+    rootEvents = rootEventIds.stream().map(eventMap::get).collect(Collectors.toUnmodifiableSet());
   }
 
   private void buildRootEntities(StructuredTrace trace) {
-    rootEntities = new HashSet<>(trace.getEntityList());
-    for (List<Entity> childEntities : parentToChildrenEntities.values()) {
-      rootEntities.removeAll(childEntities);
-    }
+    // build the root entity ids
+    Set<String> rootEntityIds = trace.getEntityList().stream().map(Entity::getEntityId)
+        .collect(Collectors.toSet());
+
+    // remove all the children, and what's remaining are the entities without children
+    // we will consider these are roots, including the ones that are standalone
+    Set<String> childrenEntityIds = parentToChildrenEntities.values().stream()
+        .flatMap(l -> l.stream().map(Entity::getEntityId)).collect(Collectors.toSet());
+    rootEntityIds.removeAll(childrenEntityIds);
+
+    rootEntities = rootEntityIds.stream().map(entityMap::get)
+        .collect(Collectors.toUnmodifiableSet());
   }
 
-
+  /**
+   * @return an immutable map of event ids to events
+   */
   public Map<ByteBuffer, Event> getEventMap() {
     return eventMap;
   }
@@ -157,7 +181,7 @@ public class StructuredTraceGraph {
   public Map<ByteBuffer, ByteBuffer> getChildIdsToParentIds() {
     return childToParentEvents.entrySet().stream()
         .collect(Collectors.toMap(
-            e -> getEventId(e.getKey()),
+            Entry::getKey,
             e -> getEventId(e.getValue())
         ));
   }
@@ -165,7 +189,7 @@ public class StructuredTraceGraph {
   public Map<ByteBuffer, List<ByteBuffer>> getParentToChildEventIds() {
     return parentToChildrenEvents.entrySet().stream()
         .collect(Collectors.toMap(
-            e -> getEventId(e.getKey()),
+            Entry::getKey,
             e -> e.getValue().stream().map(this::getEventId).collect(Collectors.toList()))
         );
   }
