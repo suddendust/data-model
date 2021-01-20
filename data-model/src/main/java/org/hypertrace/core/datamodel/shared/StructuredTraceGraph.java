@@ -93,12 +93,15 @@ public class StructuredTraceGraph {
 
   private void buildEventMap(StructuredTrace trace) {
     eventMap = trace.getEventList().stream()
-        .collect(Collectors.toUnmodifiableMap(Event::getEventId, Function.identity()));
+        .collect(
+            Collectors.toUnmodifiableMap(Event::getEventId, Function.identity(), (e1, e2) -> e2));
+
   }
 
   private void buildEntityMap(StructuredTrace trace) {
     entityMap = trace.getEntityList().stream()
-        .collect(Collectors.toUnmodifiableMap(Entity::getEntityId, Function.identity()));
+        .collect(
+            Collectors.toUnmodifiableMap(Entity::getEntityId, Function.identity(), (e1, e2) -> e2));
   }
 
   private void buildParentChildRelationship(StructuredTrace trace) {

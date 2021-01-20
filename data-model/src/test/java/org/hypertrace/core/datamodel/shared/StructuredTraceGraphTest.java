@@ -61,7 +61,11 @@ class StructuredTraceGraphTest {
   }
 
   @Test
-  void test_createGraph_validInput_shouldCreateCorrectGraph() {
+  void test_createGraph_withValidInput() {
+    createGraph_shouldCreateCorrectGraph();
+  }
+
+  private void createGraph_shouldCreateCorrectGraph() {
     int rootIndex1 = 0;
     int rootIndex2 = 1;
     int sourceIdx1 = rootIndex1;
@@ -185,6 +189,14 @@ class StructuredTraceGraphTest {
     when(e.getMetrics())
         .thenReturn(Metrics.newBuilder().setMetricMap(new HashMap<>()).build());
     return e;
+  }
+
+  @Test
+  void test_createGraph_withDuplicateEntities() {
+    // add duplicate entity
+    entities.add(entities.get(0));
+
+    createGraph_shouldCreateCorrectGraph();
   }
 
 }
