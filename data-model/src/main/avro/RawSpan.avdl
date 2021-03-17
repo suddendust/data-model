@@ -4,6 +4,7 @@ protocol RawSpanProtocol {
   import idl "Attributes.avdl";
   import idl "Entity.avdl";
   import idl "Event.avdl";
+  import idl "Resource.avdl";
 
   record RawSpan {
     string customer_id;
@@ -11,6 +12,8 @@ protocol RawSpanProtocol {
     bytes trace_id;
 
     array<Entity> entity_list = [];
+
+    union { null, Resource } resource = null;
 
     Event event;
 

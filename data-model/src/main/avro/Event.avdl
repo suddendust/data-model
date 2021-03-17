@@ -34,6 +34,9 @@ protocol EventProtocol {
     // Event may be associated with multiple entities
     array<string> entity_id_list = [];
 
+    // The index of the associated resource in the structured trace resource list, or -1 if none
+    int resource_index = -1;
+
     // Raw attributes corresponding to this event that came from the original tracer.
     union { null, Attributes } attributes = null;
 

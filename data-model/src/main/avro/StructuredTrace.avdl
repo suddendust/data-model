@@ -6,6 +6,7 @@ protocol StructuredTraceProtocol {
   import idl "Entity.avdl";
   import idl "Event.avdl";
   import idl "Timestamps.avdl";
+  import idl "Resource.avdl";
 
   enum EdgeType {
     EVENT_EVENT,
@@ -53,6 +54,8 @@ protocol StructuredTraceProtocol {
     // set of entity nodes that generate events (spans)
     // For e.g. Service (Entity) generates Span (Event)
     array<Entity> entity_list;
+
+    array<Resource> resource_list = [];
 
     // Each event_node represents a Span
     array<Event> event_list;

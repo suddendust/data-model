@@ -1,5 +1,7 @@
 package org.hypertrace.core.datamodel.shared.trace;
 
+import static java.util.Objects.nonNull;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.nio.ByteBuffer;
@@ -7,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +26,7 @@ import org.hypertrace.core.datamodel.EventRefType;
 import org.hypertrace.core.datamodel.MetricValue;
 import org.hypertrace.core.datamodel.Metrics;
 import org.hypertrace.core.datamodel.RawSpan;
+import org.hypertrace.core.datamodel.Resource;
 import org.hypertrace.core.datamodel.StructuredTrace;
 import org.hypertrace.core.datamodel.StructuredTrace.Builder;
 import org.hypertrace.core.datamodel.Timestamps;
@@ -42,6 +46,7 @@ public class StructuredTraceBuilder {
 
   private final Map<String, Entity> entityMap;
   private final Map<ByteBuffer, Event> eventMap;
+  private final List<Resource> resourceList;
   private ArrayList<ByteBuffer> orderedEventNodes;
   private ArrayList<String> orderedEntityNodes;
 
@@ -59,16 +64,11 @@ public class StructuredTraceBuilder {
       List<Event> eventList,
       Map<String, Entity> entityMap,
       String customerId,
-      ByteBuffer traceId) {
-    this(eventList, entityMap, customerId, traceId, null);
-  }
-
-  public StructuredTraceBuilder(
-      List<Event> eventList,
-      Map<String, Entity> entityMap,
-      String customerId,
-      ByteBuffer traceId, Timestamps timestamps) {
+      ByteBuffer traceId,
+      Timestamps timestamps,
+      List<Resource> resourceList) {
     this.eventList = eventList;
+    this.resourceList = resourceList;
     this.customerId = customerId;
     this.traceId = traceId;
     this.entityMap = Map.copyOf(entityMap);
@@ -191,6 +191,7 @@ public class StructuredTraceBuilder {
     builder.setEventEdgeList(new ArrayList<>());
     builder.setEntityEdgeList(new ArrayList<>());
     builder.setEntityEventEdgeList(new ArrayList<>());
+    builder.setResourceList(this.resourceList);
 
     //Node Builders
     //Initialize EVENT NODE
@@ -420,10 +421,21 @@ public class StructuredTraceBuilder {
                                                                  String customerId,
                                                                  Timestamps timestamps) {
     Map<String, Entity> entityMap = new HashMap<>();
+    // Relying on insertion ordered keyset
+    LinkedHashMap<Resource, Integer> resourceIndexMap = new LinkedHashMap<>();
     List<Event> eventList = new ArrayList<>();
     for (RawSpan rawSpan : rawSpanList) {
       eventList.add(rawSpan.getEvent());
       List<Entity> entitiesList = rawSpan.getEntityList();
+
+      if (nonNull(rawSpan.getResource())) {
+        // If a resource exists on span, record the resource and its index
+        rawSpan
+            .getEvent()
+            .setResourceIndex(
+                resourceIndexMap.computeIfAbsent(
+                    rawSpan.getResource(), unused -> resourceIndexMap.size()));
+      }
       for (Entity entity : entitiesList) {
         if (!entityMap.containsKey(entity.getEntityId())) {
           entityMap.put(entity.getEntityId(), entity);
@@ -440,7 +452,8 @@ public class StructuredTraceBuilder {
         entityMap,
         customerId,
         traceId,
-        timestamps);
+        timestamps,
+        List.copyOf(resourceIndexMap.keySet()));
 
     return structuredTraceBuilder.buildStructuredTrace();
   }
