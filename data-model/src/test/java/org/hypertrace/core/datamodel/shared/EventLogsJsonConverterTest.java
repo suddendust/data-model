@@ -10,7 +10,7 @@ import org.hypertrace.core.datamodel.EventLog;
 import org.hypertrace.core.datamodel.EventLogs;
 import org.junit.jupiter.api.Test;
 
-public class EventLogsJsonTest {
+public class EventLogsJsonConverterTest {
 
   @Test
   public void testConversion() {
