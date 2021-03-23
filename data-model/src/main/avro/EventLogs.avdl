@@ -1,0 +1,13 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol EventLogsProtocol {
+  import idl "Attributes.avdl";
+
+  record EventLog {
+    long timeStamp = 0;
+    Attributes attributes;
+  }
+
+  record EventLogs {
+    array<EventLog> eventLogs = [];
+  }
+}

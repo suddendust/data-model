@@ -5,6 +5,7 @@ protocol RawSpanProtocol {
   import idl "Entity.avdl";
   import idl "Event.avdl";
   import idl "Resource.avdl";
+  import idl "EventLogs.avdl";
 
   record RawSpan {
     string customer_id;
@@ -18,6 +19,8 @@ protocol RawSpanProtocol {
     Event event;
 
     long received_time_millis = 0;
+
+    union { null, EventLogs } eventLogs = null;
   }
 
   record RawSpans {

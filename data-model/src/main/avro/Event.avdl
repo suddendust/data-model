@@ -7,6 +7,7 @@ protocol EventProtocol {
   import idl "eventfields/rpc/Rpc.avdl";
   import idl "eventfields/sql/Sql.avdl";
   import idl "eventfields/jaeger/JaegerFields.avdl";
+  import idl "EventLogs.avdl";
 
   enum EventRefType {
     CHILD_OF,
@@ -65,5 +66,7 @@ protocol EventProtocol {
 
     // Rpc attributes for service, method and system corresponding to Otel tags
     union { null, org.hypertrace.core.datamodel.eventfields.rpc.Rpc } rpc = null;
+
+    union { null, EventLogs } eventLogs = null;
   }
 }

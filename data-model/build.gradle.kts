@@ -16,6 +16,7 @@ dependencies {
   api("io.micrometer:micrometer-core:1.5.3")
 
   implementation("com.google.guava:guava:30.0-jre")
+  implementation("com.google.code.gson:gson:2.8.6")
   implementation("org.apache.commons:commons-lang3:3.10")
 
   testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
