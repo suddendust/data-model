@@ -1,7 +1,7 @@
 plugins {
   `java-library`
   jacoco
-  id("org.hypertrace.avro-plugin") version "0.2.1"
+  id("org.hypertrace.avro-plugin") version "0.3.1"
   id("org.hypertrace.publish-plugin")
   id("org.hypertrace.jacoco-report-plugin")
 }
@@ -11,7 +11,7 @@ tasks.test {
 }
 
 dependencies {
-  api("org.apache.avro:avro:1.10.1")
+  api("org.apache.avro:avro:1.10.2")
   api("commons-codec:commons-codec:1.14")
   api("io.micrometer:micrometer-core:1.5.3")
 
