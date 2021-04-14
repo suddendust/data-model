@@ -1,0 +1,20 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol LogEventProtocol {
+  import idl "Attributes.avdl";
+
+  record LogEvent {
+    /** Value is UNIX Epoch time in nanoseconds since 00:00:00 UTC on 1 January 1970 **/
+    long timestamp_nanos = 0;
+
+    /** tenant_id serves the purpose of identifying tenant **/
+    union { null, string } tenant_id = null;
+
+    union { null, bytes } span_id = null;
+    union { null, bytes } trace_id = null;
+    union { null, Attributes } attributes = null;
+  }
+
+  record LogEvents {
+    array<LogEvent> log_events = [];
+  }
+}
