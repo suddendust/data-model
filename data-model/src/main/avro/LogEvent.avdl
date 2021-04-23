@@ -12,6 +12,7 @@ protocol LogEventProtocol {
     union { null, bytes } span_id = null;
     union { null, bytes } trace_id = null;
     union { null, Attributes } attributes = null;
+    union { null, Attributes } enriched_attributes = null;
   }
 
   record LogEvents {
