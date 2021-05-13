@@ -3,9 +3,7 @@ protocol RawSpanWrapperProtocol {
   import idl "RawSpan.avdl";
 
   record RawSpanWrapper {
-    string customer_id;
-
-    bytes trace_id;
+    bytes span_id;
 
     bytes rawSpan;
   }
