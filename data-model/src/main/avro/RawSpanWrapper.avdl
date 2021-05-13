@@ -1,0 +1,12 @@
+@namespace("org.hypertrace.core.datamodel")
+protocol RawSpanWrapperProtocol {
+  import idl "RawSpan.avdl";
+
+  record RawSpanWrapper {
+    string customer_id;
+
+    bytes trace_id;
+
+    bytes rawSpan;
+  }
+}
