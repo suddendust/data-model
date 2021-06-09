@@ -1,6 +1,8 @@
 package org.hypertrace.core.datamodel.shared;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -199,4 +201,96 @@ class StructuredTraceGraphTest {
     createGraph_shouldCreateCorrectGraph();
   }
 
+  @Test
+  void test_recreate_partialGraph() {
+    ByteBuffer traceId = generateRandomId();
+
+    String entityId1 = UUID.randomUUID().toString();
+    Event e1 = getEvent(generateRandomId(), entityId1);
+    Entity entity1 = getEntity(entityId1, "DOCKER_CONTAINER");
+    RawSpan rawSpan1 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
+        .setEvent(e1).setEntityList(List.of(entity1)).build();
+
+    String entityId2 = UUID.randomUUID().toString();
+    Event e2 = getEvent(generateRandomId(), entityId2);
+    Entity entity2 = getEntity(entityId2, "K8S_POD");
+    RawSpan rawSpan2 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
+        .setEvent(e2).setEntityList(List.of(entity2)).build();
+
+    // Make e2 as child of e1.
+    ByteBuffer eventId1 = e1.getEventId();
+    when(e2.getEventRefList()).thenReturn(Collections.singletonList(
+        EventRef.newBuilder().setEventId(eventId1).setRefType(EventRefType.CHILD_OF)
+            .setTraceId(traceId).build()));
+
+    StructuredTrace trace = StructuredTraceBuilder
+        .buildStructuredTraceFromRawSpans(List.of(rawSpan1, rawSpan2),
+            traceId,
+            CUSTOMER_ID);
+
+    assertEquals(traceId, trace.getTraceId());
+    assertEquals(CUSTOMER_ID, trace.getCustomerId());
+    assertEquals(2, trace.getEventList().size());
+    assertEquals(2, trace.getEntityList().size());
+
+    StructuredTraceAssert.assertEntityEntityEdge(trace);
+    StructuredTraceAssert.assertEventEventEdge(trace);
+    StructuredTraceAssert.assertEntityEventEdges(trace);
+
+    StructuredTraceGraph graph = StructuredTraceGraph.createGraph(trace);
+    assertEquals(2, graph.getEventMap().size());
+    assertEquals(1, graph.getRootEntities().size());
+    assertEquals(1, graph.getRootEvents().size());
+    assertTrue(graph.getChildIdsToParentIds().containsKey(e2.getEventId()));
+    assertTrue(graph.getParentToChildEventIds().containsKey(e1.getEventId()));
+    assertTrue(graph.getParentEntities(entity2).contains(entity1));
+    assertEquals(e1, graph.getParentEvent(e2));
+
+    // add a new event and rebuild the event graph
+    String entityId3 = UUID.randomUUID().toString();
+    Event e3 = getEvent(generateRandomId(), entityId3);
+    Entity entity3 = getEntity(entityId3, "K8S_POD");
+    RawSpan rawSpan3 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
+        .setEvent(e3).setEntityList(List.of(entity3)).build();
+    // e3 child of e1
+    when(e3.getEventRefList()).thenReturn(Collections.singletonList(
+        EventRef.newBuilder().setEventId(eventId1).setRefType(EventRefType.CHILD_OF)
+            .setTraceId(traceId).build()));
+
+    trace = StructuredTraceBuilder
+        .buildStructuredTraceFromRawSpans(List.of(rawSpan1, rawSpan2, rawSpan3),
+            traceId,
+            CUSTOMER_ID);
+    TraceEventsGraph traceEventsGraph = graph.getTraceEventsGraph();
+    TraceEntitiesGraph traceEntitiesGraph = graph.getTraceEntitiesGraph();
+
+    graph = StructuredTraceGraph.reCreateTraceEventsGraph(trace);
+    assertSame(traceEntitiesGraph, graph.getTraceEntitiesGraph());
+    assertNotSame(traceEventsGraph, graph.getTraceEventsGraph());
+    assertEquals(3, graph.getEventMap().size());
+    assertEquals(1, graph.getRootEntities().size());
+    assertEquals(1, graph.getRootEvents().size());
+    assertTrue(graph.getChildIdsToParentIds().containsKey(e2.getEventId()));
+    assertTrue(graph.getChildIdsToParentIds().containsKey(e3.getEventId()));
+    assertTrue(graph.getParentToChildEventIds().containsKey(e1.getEventId()));
+    assertTrue(graph.getParentEntities(entity2).contains(entity1));
+    assertEquals(1, graph.getChildrenEntities(entity1).size());
+    assertEquals(e1, graph.getParentEvent(e2));
+    assertEquals(e1, graph.getParentEvent(e3));
+
+    traceEventsGraph = graph.getTraceEventsGraph();
+    graph = StructuredTraceGraph.reCreateTraceEntitiesGraph(trace);
+    assertNotSame(traceEntitiesGraph, graph.getTraceEntitiesGraph());
+    assertSame(traceEventsGraph, graph.getTraceEventsGraph());
+    assertEquals(3, graph.getEventMap().size());
+    assertEquals(1, graph.getRootEntities().size());
+    assertEquals(1, graph.getRootEvents().size());
+    assertTrue(graph.getChildIdsToParentIds().containsKey(e2.getEventId()));
+    assertTrue(graph.getChildIdsToParentIds().containsKey(e3.getEventId()));
+    assertTrue(graph.getParentToChildEventIds().containsKey(e1.getEventId()));
+    assertTrue(graph.getParentEntities(entity2).contains(entity1));
+    assertEquals(2, graph.getChildrenEntities(entity1).size());
+    assertEquals(e1, graph.getParentEvent(e2));
+    assertEquals(e1, graph.getParentEvent(e3));
+  }
 }
