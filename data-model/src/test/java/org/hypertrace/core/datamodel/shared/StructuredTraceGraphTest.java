@@ -87,7 +87,7 @@ class StructuredTraceGraphTest {
     Set<Entity> expectedRootEntities =
         Sets.newHashSet(entities.get(rootIndex1), entities.get(rootIndex2));
 
-    graph = StructuredTraceGraph.createGraph(trace);
+    graph = new StructuredTraceGraph(trace);
     assertEquals(expectedRootEntities, graph.getRootEntities());
     assertEquals(expectedRootEvents, graph.getRootEvents());
     assertEquals(events.get(sourceIdx1), graph.getParentEvent(events.get(targetIdx1)));
@@ -159,7 +159,7 @@ class StructuredTraceGraphTest {
     StructuredTraceAssert.assertEventEventEdge(trace);
     StructuredTraceAssert.assertEntityEventEdges(trace);
 
-    StructuredTraceGraph graph = StructuredTraceGraph.createGraph(trace);
+    StructuredTraceGraph graph = new StructuredTraceGraph(trace);
     assertEquals(2, graph.getEventMap().size());
     assertEquals(1, graph.getRootEntities().size());
     assertEquals(1, graph.getRootEvents().size());
@@ -237,7 +237,7 @@ class StructuredTraceGraphTest {
     StructuredTraceAssert.assertEventEventEdge(trace);
     StructuredTraceAssert.assertEntityEventEdges(trace);
 
-    StructuredTraceGraph graph = StructuredTraceGraph.createGraph(trace);
+    StructuredTraceGraph graph = new StructuredTraceGraph(trace);
     assertEquals(2, graph.getEventMap().size());
     assertEquals(1, graph.getRootEntities().size());
     assertEquals(1, graph.getRootEvents().size());
@@ -264,7 +264,7 @@ class StructuredTraceGraphTest {
     TraceEventsGraph traceEventsGraph = graph.getTraceEventsGraph();
     TraceEntitiesGraph traceEntitiesGraph = graph.getTraceEntitiesGraph();
 
-    graph = StructuredTraceGraph.reCreateTraceEventsGraph(trace);
+    graph.reCreateTraceEventsGraph(trace);
     assertSame(traceEntitiesGraph, graph.getTraceEntitiesGraph());
     assertNotSame(traceEventsGraph, graph.getTraceEventsGraph());
     assertEquals(3, graph.getEventMap().size());
@@ -279,7 +279,7 @@ class StructuredTraceGraphTest {
     assertEquals(e1, graph.getParentEvent(e3));
 
     traceEventsGraph = graph.getTraceEventsGraph();
-    graph = StructuredTraceGraph.reCreateTraceEntitiesGraph(trace);
+    graph.reCreateTraceEntitiesGraph(trace);
     assertNotSame(traceEntitiesGraph, graph.getTraceEntitiesGraph());
     assertSame(traceEventsGraph, graph.getTraceEventsGraph());
     assertEquals(3, graph.getEventMap().size());

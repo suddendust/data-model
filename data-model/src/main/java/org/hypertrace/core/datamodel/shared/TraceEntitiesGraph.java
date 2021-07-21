@@ -21,22 +21,13 @@ public class TraceEntitiesGraph {
   private final Map<String, Entity> entityMap;
   private final Set<Entity> rootEntities;
 
-  private TraceEntitiesGraph() {
+  TraceEntitiesGraph(StructuredTrace trace) {
     this.childToParentEntities = new HashMap<>();
     this.parentToChildrenEntities = new HashMap<>();
     this.entityMap = Maps.newHashMap();
     this.rootEntities = Sets.newHashSet();
-  }
-
-  /**
-   * Create the instance with or without the full traversal graph includesFullGraph    Includes
-   * computing the full traversal graph or not
-   */
-  public static TraceEntitiesGraph createGraph(StructuredTrace trace) {
-    TraceEntitiesGraph graph = new TraceEntitiesGraph();
-    graph.buildParentChildRelationship(trace);
-    graph.processEntities(trace);
-    return graph;
+    buildParentChildRelationship(trace);
+    processEntities(trace);
   }
 
   /**

@@ -25,22 +25,13 @@ public class TraceEventsGraph {
   private final Map<ByteBuffer, Event> eventMap;
   private final Set<Event> rootEvents;
 
-  private TraceEventsGraph() {
+  TraceEventsGraph(StructuredTrace trace) {
     this.childToParentEvents = new HashMap<>();
     this.parentToChildrenEvents = new HashMap<>();
     this.eventMap = Maps.newHashMap();
     this.rootEvents = Sets.newHashSet();
-  }
-
-  /**
-   * Create the instance with or without the full traversal graph includesFullGraph   Includes
-   * computing the full traversal graph or not
-   */
-  static TraceEventsGraph createGraph(StructuredTrace trace) {
-    TraceEventsGraph graph = new TraceEventsGraph();
-    graph.buildParentChildRelationship(trace);
-    graph.processEvents(trace);
-    return graph;
+    buildParentChildRelationship(trace);
+    processEvents(trace);
   }
 
   /**

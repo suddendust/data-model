@@ -17,31 +17,17 @@ public class StructuredTraceGraph {
   private TraceEventsGraph traceEventsGraph;
   private TraceEntitiesGraph traceEntitiesGraph;
 
-  private static StructuredTraceGraph graph;
-
-  public static StructuredTraceGraph createGraph(StructuredTrace trace) {
-    graph = new StructuredTraceGraph();
-    graph.traceEventsGraph = TraceEventsGraph.createGraph(trace);
-    graph.traceEntitiesGraph = TraceEntitiesGraph.createGraph(trace);
-
-    return graph;
+  public StructuredTraceGraph(StructuredTrace trace) {
+    this.traceEventsGraph = new TraceEventsGraph(trace);
+    this.traceEntitiesGraph = new TraceEntitiesGraph(trace);
   }
 
-  public static StructuredTraceGraph reCreateTraceEventsGraph(StructuredTrace trace) {
-    if (null == graph) {
-      return createGraph(trace);
-    }
-    graph.traceEventsGraph = TraceEventsGraph.createGraph(trace);
-    return graph;
+  public void reCreateTraceEventsGraph(StructuredTrace trace) {
+    this.traceEventsGraph = new TraceEventsGraph(trace);
   }
 
-  public static StructuredTraceGraph reCreateTraceEntitiesGraph(StructuredTrace trace) {
-    if (null == graph) {
-      return createGraph(trace);
-    }
-    graph.traceEntitiesGraph = TraceEntitiesGraph.createGraph(trace);
-
-    return graph;
+  public void reCreateTraceEntitiesGraph(StructuredTrace trace) {
+    this.traceEntitiesGraph = new TraceEntitiesGraph(trace);
   }
 
   public Set<Event> getRootEvents() {
