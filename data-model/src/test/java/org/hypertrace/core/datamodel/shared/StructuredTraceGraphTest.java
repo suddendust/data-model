@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+
 class StructuredTraceGraphTest {
 
   private static final String CUSTOMER_ID = "customer_id";
@@ -139,34 +140,50 @@ class StructuredTraceGraphTest {
     RawSpan rawSpan2 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
         .setEvent(e2).setEntityList(List.of(entity2)).build();
 
+    String entityId3 = UUID.randomUUID().toString();
+    Event e3 = getEvent(generateRandomId(), entityId3);
+    Entity entity3 = getEntity(entityId3, "DAEMONSET");
+    RawSpan rawSpan3 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
+            .setEvent(e3).setEntityList(List.of(entity3)).build();
+
     // Make e2 as child of e1.
     ByteBuffer eventId1 = e1.getEventId();
     when(e2.getEventRefList()).thenReturn(Collections.singletonList(
         EventRef.newBuilder().setEventId(eventId1).setRefType(EventRefType.CHILD_OF)
             .setTraceId(traceId).build()));
 
+    //Making e3 as child of e2, follow_from construct
+    ByteBuffer eventId2 = e2.getEventId();
+    when(e3.getEventRefList()).thenReturn(Collections.singletonList(
+            EventRef.newBuilder().setEventId(eventId2).setRefType(EventRefType.FOLLOWS_FROM)
+                    .setTraceId(traceId).build()));
+
     StructuredTrace trace = StructuredTraceBuilder
-        .buildStructuredTraceFromRawSpans(List.of(rawSpan1, rawSpan2),
+        .buildStructuredTraceFromRawSpans(List.of(rawSpan1, rawSpan2,rawSpan3),
             traceId,
             CUSTOMER_ID);
 
     assertEquals(traceId, trace.getTraceId());
     assertEquals(CUSTOMER_ID, trace.getCustomerId());
-    assertEquals(2, trace.getEventList().size());
-    assertEquals(2, trace.getEntityList().size());
+    assertEquals(3, trace.getEventList().size());
+    assertEquals(3, trace.getEntityList().size());
 
     StructuredTraceAssert.assertEntityEntityEdge(trace);
     StructuredTraceAssert.assertEventEventEdge(trace);
     StructuredTraceAssert.assertEntityEventEdges(trace);
 
     StructuredTraceGraph graph = new StructuredTraceGraph(trace);
-    assertEquals(2, graph.getEventMap().size());
+    assertEquals(3, graph.getEventMap().size());
     assertEquals(1, graph.getRootEntities().size());
     assertEquals(1, graph.getRootEvents().size());
-    assertTrue(graph.getChildIdsToParentIds().containsKey(e2.getEventId()));
-    assertTrue(graph.getParentToChildEventIds().containsKey(e1.getEventId()));
+    Map<ByteBuffer,ByteBuffer> childIdToParentIds = graph.getChildIdsToParentIds();
+    Map<ByteBuffer,List<ByteBuffer>> parentToChildEventIds = graph.getParentToChildEventIds();
+    assertTrue(childIdToParentIds.containsKey(e2.getEventId()) && childIdToParentIds.containsKey(e3.getEventId()));
+    assertTrue(parentToChildEventIds.containsKey(e1.getEventId()) && parentToChildEventIds.containsKey(e2.getEventId()));
     assertTrue(graph.getParentEntities(entity2).contains(entity1));
+    assertTrue(graph.getParentEntities(entity3).contains(entity2));
     assertEquals(e1, graph.getParentEvent(e2));
+    assertEquals(e2, graph.getParentEvent(e3));
   }
 
   private ByteBuffer generateRandomId() {

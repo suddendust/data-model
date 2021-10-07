@@ -365,11 +365,22 @@ public class StructuredTraceBuilder {
         //TODO: consider creating an empty event node?
         continue;
       }
-      //todo: Read about what can we do with FOLLOWS_FROM
-      //Ignore FOLLOWS_FROM for now.
-      if (!eventRef.getRefType().equals(EventRefType.CHILD_OF)) {
-        continue;
-      }
+
+    /*
+     * For Follow from relationship:
+     * As, both the construct `child_of` and `follow_from` represent parent-child relation in common
+     * where in one case parent is interested in child span's result while in other case not.
+     *
+     * So, to support common behaviour, we will be establish link for `follow_from` as well.
+     * commenting out this part.
+     *
+     *      if (!eventRef.getRefType().equals(EventRefType.CHILD_OF)) {
+     *
+     *   continue;
+     * }
+     * Ref: https://github.com/hypertrace/hypertrace/issues/234.
+     Note: Ideally, an event should have a single parent. It would be either via child_of or using follow_from.
+     */
 
       Event parentEvent = eventMap.get(eventRef.getEventId());
 
