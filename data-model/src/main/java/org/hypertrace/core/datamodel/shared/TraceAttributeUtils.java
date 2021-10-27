@@ -5,9 +5,7 @@ import org.hypertrace.core.datamodel.AttributeValue;
 import org.hypertrace.core.datamodel.Event;
 import org.hypertrace.core.datamodel.StructuredTrace;
 
-/**
- * Convenience methods to deal with StructuredTrace attributes.
- */
+/** Convenience methods to deal with StructuredTrace attributes. */
 public class TraceAttributeUtils {
 
   public static boolean containsAttribute(StructuredTrace trace, String attribute) {
@@ -33,20 +31,21 @@ public class TraceAttributeUtils {
     return value.getValue();
   }
 
-  public static Optional<String> getAttributeValueIncludeSearchInSpans(StructuredTrace trace,
-                                                                       String key) {
+  public static Optional<String> getAttributeValueIncludeSearchInSpans(
+      StructuredTrace trace, String key) {
     if (trace == null) {
       return Optional.empty();
     }
 
-    Optional<String> value = AttributeSearch
-        .searchForAttributeIgnoreKeyCase(trace.getAttributes(), key);
+    Optional<String> value =
+        AttributeSearch.searchForAttributeIgnoreKeyCase(trace.getAttributes(), key);
     if (value.isPresent()) {
       return value;
     }
 
     for (Event event : trace.getEventList()) {
-      // SpanAttributeUtils.getStringAttributeIgnoreKeyCase searches in both attributes and enriched attributes
+      // SpanAttributeUtils.getStringAttributeIgnoreKeyCase searches in both attributes and enriched
+      // attributes
       value = SpanAttributeUtils.getStringAttributeIgnoreKeyCase(event, key);
       if (value.isPresent()) {
         return value;

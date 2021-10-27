@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.hypertrace.core.datamodel.Edge;
 import org.hypertrace.core.datamodel.Event;
@@ -34,18 +33,14 @@ public class TraceEventsGraph {
     processEvents(trace);
   }
 
-  /**
-   * @return an immutable set containing the root events
-   */
+  /** @return an immutable set containing the root events */
   public Set<Event> getRootEvents() {
     return rootEvents;
   }
 
-
   public Event getParentEvent(Event event) {
     return childToParentEvents.get(event.getEventId());
   }
-
 
   public List<Event> getChildrenEvents(Event event) {
     return parentToChildrenEvents.get(event.getEventId());
@@ -65,10 +60,10 @@ public class TraceEventsGraph {
         int targetIndex = edge.getTgtIndex();
         Event parentEvent = events.get(sourceIndex);
         Event childEvent = events.get(targetIndex);
-        parentToChildrenEvents.computeIfAbsent(parentEvent.getEventId(), k -> new ArrayList<>())
+        parentToChildrenEvents
+            .computeIfAbsent(parentEvent.getEventId(), k -> new ArrayList<>())
             .add(childEvent);
         childToParentEvents.put(childEvent.getEventId(), parentEvent);
-
       }
     }
   }
@@ -84,27 +79,22 @@ public class TraceEventsGraph {
     }
   }
 
-  /**
-   * @return an immutable map of event ids to events
-   */
+  /** @return an immutable map of event ids to events */
   public Map<ByteBuffer, Event> getEventMap() {
     return eventMap;
   }
 
   public Map<ByteBuffer, ByteBuffer> getChildIdsToParentIds() {
     return childToParentEvents.entrySet().stream()
-        .collect(Collectors.toMap(
-            Entry::getKey,
-            e -> getEventId(e.getValue())
-        ));
+        .collect(Collectors.toMap(Entry::getKey, e -> getEventId(e.getValue())));
   }
 
   public Map<ByteBuffer, List<ByteBuffer>> getParentToChildEventIds() {
     return parentToChildrenEvents.entrySet().stream()
-        .collect(Collectors.toMap(
-            Entry::getKey,
-            e -> e.getValue().stream().map(this::getEventId).collect(Collectors.toList()))
-        );
+        .collect(
+            Collectors.toMap(
+                Entry::getKey,
+                e -> e.getValue().stream().map(this::getEventId).collect(Collectors.toList())));
   }
 
   private ByteBuffer getEventId(Event event) {

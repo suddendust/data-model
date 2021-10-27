@@ -24,18 +24,18 @@ public class SpanAttributeUtils {
     return childEvents == null || childEvents.isEmpty();
   }
 
-  public static String getStringAttributeWithDefault(Event event, String attributeKey,
-                                                     String defaultValue) {
+  public static String getStringAttributeWithDefault(
+      Event event, String attributeKey, String defaultValue) {
     String value = getStringAttribute(event, attributeKey);
     return value == null ? defaultValue : value;
   }
 
-  public static AttributeValue getAttributeValueWithDefault(Event event, String attributeKey,
-                                                            String defaultValue) {
+  public static AttributeValue getAttributeValueWithDefault(
+      Event event, String attributeKey, String defaultValue) {
     AttributeValue attributeValue = getAttributeValue(event, attributeKey);
-    return attributeValue == null ?
-        AttributeValue.newBuilder().setValue(defaultValue).build() :
-        attributeValue;
+    return attributeValue == null
+        ? AttributeValue.newBuilder().setValue(defaultValue).build()
+        : attributeValue;
   }
 
   public static AttributeValue getAttributeValue(Event event, String attributeKey) {
@@ -53,8 +53,8 @@ public class SpanAttributeUtils {
 
   public static AttributeValue getAttributeValue(Event.Builder eventBuilder, String attributeKey) {
     if (eventBuilder.getEnrichedAttributes() != null) {
-      AttributeValue value = eventBuilder.getEnrichedAttributes().getAttributeMap()
-          .get(attributeKey);
+      AttributeValue value =
+          eventBuilder.getEnrichedAttributes().getAttributeMap().get(attributeKey);
       if (value != null) {
         return value;
       }
@@ -76,8 +76,9 @@ public class SpanAttributeUtils {
       return Optional.empty();
     }
     if (event.getEnrichedAttributes() != null) {
-      Optional<String> value = AttributeSearch
-          .searchForAttributeIgnoreKeyCase(event.getEnrichedAttributes(), attributeKey);
+      Optional<String> value =
+          AttributeSearch.searchForAttributeIgnoreKeyCase(
+              event.getEnrichedAttributes(), attributeKey);
       if (value.isPresent()) {
         return value;
       }
@@ -131,18 +132,18 @@ public class SpanAttributeUtils {
         && attributes.getAttributeMap().containsKey(attrKey);
   }
 
-  public static Map<String, AttributeValue> getAttributesWithPrefixKey(Event event,
-                                                                       String attributeKeyPrefix) {
-    if (event.getEnrichedAttributes() != null &&
-        event.getEnrichedAttributes().getAttributeMap() != null
-    ) {
-      Map<String, AttributeValue> enrichedAttributeMap = event.getEnrichedAttributes()
-          .getAttributeMap();
-      Map<String, AttributeValue> filteredEnrichedAttributeMap = enrichedAttributeMap.entrySet()
-          .stream()
-          .filter(
-              entry -> entry.getKey().toLowerCase().startsWith(attributeKeyPrefix.toLowerCase()))
-          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+  public static Map<String, AttributeValue> getAttributesWithPrefixKey(
+      Event event, String attributeKeyPrefix) {
+    if (event.getEnrichedAttributes() != null
+        && event.getEnrichedAttributes().getAttributeMap() != null) {
+      Map<String, AttributeValue> enrichedAttributeMap =
+          event.getEnrichedAttributes().getAttributeMap();
+      Map<String, AttributeValue> filteredEnrichedAttributeMap =
+          enrichedAttributeMap.entrySet().stream()
+              .filter(
+                  entry ->
+                      entry.getKey().toLowerCase().startsWith(attributeKeyPrefix.toLowerCase()))
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
       if (!filteredEnrichedAttributeMap.isEmpty()) {
         return filteredEnrichedAttributeMap;
@@ -151,11 +152,12 @@ public class SpanAttributeUtils {
 
     if (event.getAttributes() != null && event.getAttributes().getAttributeMap() != null) {
       Map<String, AttributeValue> attributeMap = event.getAttributes().getAttributeMap();
-      Map<String, AttributeValue> filteredAttributeMap = attributeMap.entrySet()
-          .stream()
-          .filter(
-              entry -> entry.getKey().toLowerCase().startsWith(attributeKeyPrefix.toLowerCase()))
-          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+      Map<String, AttributeValue> filteredAttributeMap =
+          attributeMap.entrySet().stream()
+              .filter(
+                  entry ->
+                      entry.getKey().toLowerCase().startsWith(attributeKeyPrefix.toLowerCase()))
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
       if (!filteredAttributeMap.isEmpty()) {
         return filteredAttributeMap;
@@ -165,9 +167,10 @@ public class SpanAttributeUtils {
   }
 
   @Nullable
-  public static Event getParentSpan(Event span,
-                                    Map<ByteBuffer, ByteBuffer> childToParentEventIds,
-                                    Map<ByteBuffer, Event> idToEvent) {
+  public static Event getParentSpan(
+      Event span,
+      Map<ByteBuffer, ByteBuffer> childToParentEventIds,
+      Map<ByteBuffer, Event> idToEvent) {
     ByteBuffer parentSpanId = childToParentEventIds.get(span.getEventId());
     return parentSpanId != null ? idToEvent.get(parentSpanId) : null;
   }

@@ -30,26 +30,20 @@ public class TraceEntitiesGraph {
     processEntities(trace);
   }
 
-  /**
-   * @return an immutable set containing the root entities
-   */
+  /** @return an immutable set containing the root entities */
   public Set<Entity> getRootEntities() {
     return rootEntities;
   }
-
 
   public List<Entity> getParentEntities(Entity entity) {
     return childToParentEntities.get(entity.getEntityId());
   }
 
-
   public List<Entity> getChildrenEntities(Entity entity) {
     return parentToChildrenEntities.get(entity.getEntityId());
   }
 
-  /**
-   * @return an immutable map of entity ids to entities
-   */
+  /** @return an immutable map of entity ids to entities */
   public Map<String, Entity> getEntityMap() {
     return entityMap;
   }
@@ -69,9 +63,11 @@ public class TraceEntitiesGraph {
         Integer targetIndex = entityEdge.getTgtIndex();
         Entity parentEntity = entities.get(sourceIndex);
         Entity childEntity = entities.get(targetIndex);
-        parentToChildrenEntities.computeIfAbsent(parentEntity.getEntityId(), k -> new ArrayList<>())
+        parentToChildrenEntities
+            .computeIfAbsent(parentEntity.getEntityId(), k -> new ArrayList<>())
             .add(childEntity);
-        childToParentEntities.computeIfAbsent(childEntity.getEntityId(), k -> new ArrayList<>())
+        childToParentEntities
+            .computeIfAbsent(childEntity.getEntityId(), k -> new ArrayList<>())
             .add(parentEntity);
       }
     }

@@ -1,15 +1,5 @@
 package org.hypertrace.core.datamodel.shared;
 
-import io.micrometer.core.instrument.Timer;
-import org.hypertrace.core.datamodel.StructuredTrace;
-import org.hypertrace.core.datamodel.TimestampRecord;
-import org.hypertrace.core.datamodel.Timestamps;
-import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -17,6 +7,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import io.micrometer.core.instrument.Timer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import org.hypertrace.core.datamodel.StructuredTrace;
+import org.hypertrace.core.datamodel.TimestampRecord;
+import org.hypertrace.core.datamodel.Timestamps;
+import org.junit.jupiter.api.Test;
 
 class DataflowMetricUtilsTest {
 

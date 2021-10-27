@@ -27,9 +27,10 @@ public class AttributeValueCreator {
 
   public static AttributeValue createFromByteBuffers(Set<ByteBuffer> values) {
     List<String> list = new ArrayList<>();
-    values.forEach(value -> {
-      list.add(new String(HexUtils.getBytes(value)));
-    });
+    values.forEach(
+        value -> {
+          list.add(new String(HexUtils.getBytes(value)));
+        });
     return AttributeValue.newBuilder().setValueList(list).build();
   }
 }

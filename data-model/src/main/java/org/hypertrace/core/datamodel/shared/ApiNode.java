@@ -15,10 +15,11 @@ public class ApiNode<T extends GenericRecord> {
   /**
    * This creates an API Node(surprise) which contains all the events under an API call within a
    * single service. The call could be external or internal.
+   *
    * @param headEvent: The event that defines the API call. The head of the API Trace.
    * @param events: All events under the API call including the head event.
    * @param apiEntryEvent: The Entry API event. Equals the head event if the head event is an Entry
-   *                     Event. Otherwise it's null.
+   *     Event. Otherwise it's null.
    * @param exitEvents: The exit events into another service and API from this API call.
    */
   public ApiNode(T headEvent, List<T> events, T apiEntryEvent, List<T> exitEvents) {
@@ -61,10 +62,10 @@ public class ApiNode<T extends GenericRecord> {
       return false;
     }
     ApiNode apiNode = (ApiNode) o;
-    return Objects.equals(entryApiBoundaryEvent, apiNode.entryApiBoundaryEvent) &&
-        Objects.equals(exitApiBoundaryEvents, apiNode.exitApiBoundaryEvents) &&
-        Objects.equals(headEvent, apiNode.headEvent) &&
-        Objects.equals(events, apiNode.events);
+    return Objects.equals(entryApiBoundaryEvent, apiNode.entryApiBoundaryEvent)
+        && Objects.equals(exitApiBoundaryEvents, apiNode.exitApiBoundaryEvents)
+        && Objects.equals(headEvent, apiNode.headEvent)
+        && Objects.equals(events, apiNode.events);
   }
 
   @Override

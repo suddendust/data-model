@@ -15,15 +15,14 @@ public class AttributeSearch {
     return Optional.empty();
   }
 
-  public static Optional<String> searchForAttributeIgnoreKeyCase(Attributes attributes,
-                                                                 String key) {
+  public static Optional<String> searchForAttributeIgnoreKeyCase(
+      Attributes attributes, String key) {
     if (attributes != null && attributes.getAttributeMap() != null) {
-      Optional<String> attributeKey = attributes.getAttributeMap().keySet().stream()
-          .filter(key::equalsIgnoreCase).findFirst();
+      Optional<String> attributeKey =
+          attributes.getAttributeMap().keySet().stream().filter(key::equalsIgnoreCase).findFirst();
 
       if (attributeKey.isPresent()) {
-        return Optional.of(attributes.getAttributeMap()
-            .get(attributeKey.get()).getValue());
+        return Optional.of(attributes.getAttributeMap().get(attributeKey.get()).getValue());
       }
     }
     return Optional.empty();

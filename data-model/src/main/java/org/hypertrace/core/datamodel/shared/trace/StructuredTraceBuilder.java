@@ -22,7 +22,6 @@ import org.hypertrace.core.datamodel.EdgeType;
 import org.hypertrace.core.datamodel.Entity;
 import org.hypertrace.core.datamodel.Event;
 import org.hypertrace.core.datamodel.EventRef;
-import org.hypertrace.core.datamodel.EventRefType;
 import org.hypertrace.core.datamodel.MetricValue;
 import org.hypertrace.core.datamodel.Metrics;
 import org.hypertrace.core.datamodel.RawSpan;
@@ -36,8 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public class StructuredTraceBuilder {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(StructuredTraceBuilder.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StructuredTraceBuilder.class);
   private long traceStartTime;
   private long traceEndTime;
   private final String customerId;
@@ -90,7 +88,7 @@ public class StructuredTraceBuilder {
     long execStartTime = System.currentTimeMillis();
 
     for (Event event : eventList) {
-      //Create the event Entity Map
+      // Create the event Entity Map
       eventMap.put(event.getEventId(), event);
       if (event.getStartTimeMillis() < traceStartTime) {
         traceStartTime = event.getStartTimeMillis();
@@ -100,22 +98,22 @@ public class StructuredTraceBuilder {
       }
     }
 
-    //process the event ref's and build edges
+    // process the event ref's and build edges
     for (Event event : eventMap.values()) {
       for (String entityId : event.getEntityIdList()) {
         entityEventConnectionMap.putIfAbsent(entityId, new ArrayList<>());
         entityEventConnectionMap.get(entityId).add(event.getEventId());
       }
-      //create entity->entity Edge and event->event edge
+      // create entity->entity Edge and event->event edge
       processEventRefList(traceId, event);
     }
 
-    //Find root nodes for event and entity
-    //First add all nodes as root nodes
-    //then iterate through all edges and remove the child nodes
-    //at the end only the nodes without parents will be left.
-    //NOTE: the reason we can't just pick nodes with node spanRef as there can be missing spans
-    //So its possible to have multiple root nodes when isPartialTrace = true
+    // Find root nodes for event and entity
+    // First add all nodes as root nodes
+    // then iterate through all edges and remove the child nodes
+    // at the end only the nodes without parents will be left.
+    // NOTE: the reason we can't just pick nodes with node spanRef as there can be missing spans
+    // So its possible to have multiple root nodes when isPartialTrace = true
     Set<String> rootEntityNodes = new HashSet<>(entityMap.keySet());
     for (Entry<String, List<String>> entry : entityEntityConnectionMap.entrySet()) {
       for (String entityId : entry.getValue()) {
@@ -131,11 +129,11 @@ public class StructuredTraceBuilder {
     }
 
     ArrayList<ByteBuffer> rootEventNodesOrdered = new ArrayList<>(rootEventNodes);
-    //sort the rootEventNodes by time. Ideally, there should be only one root Event Node
-    //We can see multiple root nodes if some span events are missing from the trace
+    // sort the rootEventNodes by time. Ideally, there should be only one root Event Node
+    // We can see multiple root nodes if some span events are missing from the trace
     if (rootEventNodes.size() > 0) {
-      rootEventNodesOrdered
-          .sort(Comparator.comparingLong(e -> eventMap.get(e).getStartTimeMillis()));
+      rootEventNodesOrdered.sort(
+          Comparator.comparingLong(e -> eventMap.get(e).getStartTimeMillis()));
     }
 
     orderedEventNodes = new ArrayList<>();
@@ -144,10 +142,10 @@ public class StructuredTraceBuilder {
     int eventIndex = 0;
     int entityIndex = 0;
 
-    //BFS order traversal
+    // BFS order traversal
     for (ByteBuffer rootEventId : rootEventNodesOrdered) {
-      //Build Graph for each root node
-      //queue for BFS traversal
+      // Build Graph for each root node
+      // queue for BFS traversal
       LinkedList<ByteBuffer> eventIdQueue = new LinkedList<>();
       eventIdQueue.add(rootEventId);
       while (!eventIdQueue.isEmpty()) {
@@ -155,7 +153,7 @@ public class StructuredTraceBuilder {
         orderedEventNodes.add(eventId);
         eventIdMapping.put(eventId, eventIndex++);
 
-        //assign entity id's as well if they are not assigned
+        // assign entity id's as well if they are not assigned
         for (String entityId : eventMap.get(eventId).getEntityIdList()) {
           if (!entityIdMapping.containsKey(entityId)) {
             entityIdMapping.put(entityId, entityIndex++);
@@ -164,10 +162,9 @@ public class StructuredTraceBuilder {
         }
         List<ByteBuffer> childEventIdList = eventEventConnectionMap.get(eventId);
         if (childEventIdList != null && childEventIdList.size() > 0) {
-          //sort the childEventId by their start time
-          childEventIdList
-              .sort(
-                  Comparator.comparingLong(e -> eventMap.get(e).getStartTimeMillis()));
+          // sort the childEventId by their start time
+          childEventIdList.sort(
+              Comparator.comparingLong(e -> eventMap.get(e).getStartTimeMillis()));
           eventIdQueue.addAll(childEventIdList);
         }
       }
@@ -175,14 +172,16 @@ public class StructuredTraceBuilder {
     StructuredTrace structuredTrace = build();
     long execEndTime = System.currentTimeMillis();
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Generated structuredTrace from events list in {} ms. Output = {}",
-          (execEndTime - execStartTime), structuredTrace);
+      LOGGER.debug(
+          "Generated structuredTrace from events list in {} ms. Output = {}",
+          (execEndTime - execStartTime),
+          structuredTrace);
     }
     return structuredTrace;
   }
 
   private StructuredTrace build() {
-    //start building the Structured Trace Proto object
+    // start building the Structured Trace Proto object
     Builder builder = StructuredTrace.newBuilder();
     builder.setCustomerId(customerId);
     builder.setTraceId(traceId);
@@ -193,18 +192,18 @@ public class StructuredTraceBuilder {
     builder.setEntityEventEdgeList(new ArrayList<>());
     builder.setResourceList(this.resourceList);
 
-    //Node Builders
-    //Initialize EVENT NODE
+    // Node Builders
+    // Initialize EVENT NODE
     for (ByteBuffer eventId : orderedEventNodes) {
       builder.getEventList().add(eventMap.get(eventId));
     }
 
-    //Initialize ENTITY NODE builders
+    // Initialize ENTITY NODE builders
     for (String entityId : orderedEntityNodes) {
       builder.getEntityList().add(entityMap.get(entityId));
     }
 
-    //Build Event Edge
+    // Build Event Edge
     for (Entry<ByteBuffer, List<ByteBuffer>> entry : eventEventConnectionMap.entrySet()) {
       ByteBuffer parentEventId = entry.getKey();
       for (ByteBuffer childEventId : entry.getValue()) {
@@ -213,7 +212,7 @@ public class StructuredTraceBuilder {
       }
     }
 
-    //Build Entity-Entity Edge
+    // Build Entity-Entity Edge
     for (Entry<String, List<String>> entry : entityEntityConnectionMap.entrySet()) {
       String parentEntityId = entry.getKey();
       for (String childEntityId : entry.getValue()) {
@@ -221,7 +220,7 @@ public class StructuredTraceBuilder {
         builder.getEntityEdgeList().add(edge);
       }
     }
-    //Entity Event Edge
+    // Entity Event Edge
     for (Entry<String, List<ByteBuffer>> entry : entityEventConnectionMap.entrySet()) {
       String entityId = entry.getKey();
       for (ByteBuffer eventId : entry.getValue()) {
@@ -230,20 +229,19 @@ public class StructuredTraceBuilder {
       }
     }
 
-    //Trace attributes
+    // Trace attributes
     HashMap<String, AttributeValue> attributeMap = new HashMap<>();
     if (isPartialTrace) {
-      attributeMap.put("isPartial",
-          AttributeValueCreator.create(isPartialTrace));
-      attributeMap
-          .put("missingEventIds", AttributeValueCreator.createFromByteBuffers(missingEventIdSet));
+      attributeMap.put("isPartial", AttributeValueCreator.create(isPartialTrace));
+      attributeMap.put(
+          "missingEventIds", AttributeValueCreator.createFromByteBuffers(missingEventIdSet));
     }
 
-    //Trace Metrics
+    // Trace Metrics
     HashMap<String, MetricValue> metricMap = new HashMap<>();
     long durationInMillis = traceEndTime - traceStartTime;
-    //todo: define constants for these things.
-    //todo: move these things to Annotation Framework
+    // todo: define constants for these things.
+    // todo: move these things to Annotation Framework
     metricMap.put("Duration", MetricValueCreator.create(durationInMillis));
     metricMap.put("CallCount", MetricValueCreator.create(1));
 
@@ -263,18 +261,16 @@ public class StructuredTraceBuilder {
     edgeBuilder.setTgtIndex(entityIdMapping.get(childEntityId));
     Entity parentEntity = entityMap.get(parentEntityId);
     Entity childEntity = entityMap.get(childEntityId);
-    //todo: define constants for these things.
-    //todo: move these things to Annotation Framework
+    // todo: define constants for these things.
+    // todo: move these things to Annotation Framework
     HashMap<String, AttributeValue> Attributes = new HashMap<>();
-    Attributes
-        .put("CallerEntityType", AttributeValueCreator.create(parentEntity.getEntityType()));
-    Attributes
-        .put("CallerEntityName", AttributeValueCreator.create(parentEntity.getEntityName()));
+    Attributes.put("CallerEntityType", AttributeValueCreator.create(parentEntity.getEntityType()));
+    Attributes.put("CallerEntityName", AttributeValueCreator.create(parentEntity.getEntityName()));
     Attributes.put("CalleeEntityType", AttributeValueCreator.create(childEntity.getEntityType()));
     Attributes.put("CalleeEntityName", AttributeValueCreator.create(childEntity.getEntityName()));
     edgeBuilder.setAttributes(new Attributes(Attributes));
 
-    //metrics
+    // metrics
     edgeBuilder.setMetrics(new Metrics(new HashMap<>()));
     return edgeBuilder.build();
   }
@@ -300,7 +296,7 @@ public class StructuredTraceBuilder {
     edgeBuilder.setStartTimeMillis(parentEvent.getStartTimeMillis());
     edgeBuilder.setEndTimeMillis(parentEvent.getEndTimeMillis());
 
-    //edge attributes
+    // edge attributes
     HashMap<String, AttributeValue> attributeMap = new HashMap<>();
 
     List<String> callerEntityNames = new ArrayList<>();
@@ -313,19 +309,18 @@ public class StructuredTraceBuilder {
       calleeEntityNames.add(entityMap.get(entityId).getEntityName());
     }
 
-    //todo: define constants for these things.
-    //todo: move these things to Annotation Framework
+    // todo: define constants for these things.
+    // todo: move these things to Annotation Framework
     attributeMap.put("CallerEntityNames", AttributeValueCreator.create(callerEntityNames));
     attributeMap.put("CalleeEntityNames", AttributeValueCreator.create(calleeEntityNames));
 
     edgeBuilder.setAttributes(new Attributes(attributeMap));
 
-    //edge metrics, only duration and call count for now
+    // edge metrics, only duration and call count for now
     HashMap<String, MetricValue> metricMap = new HashMap<>();
-    long durationInMillis =
-        parentEvent.getEndTimeMillis() - parentEvent.getStartTimeMillis();
-    //todo: define constants for these things.
-    //todo: move these things to Annotation Framework
+    long durationInMillis = parentEvent.getEndTimeMillis() - parentEvent.getStartTimeMillis();
+    // todo: define constants for these things.
+    // todo: move these things to Annotation Framework
     metricMap.put("Duration", MetricValueCreator.create(durationInMillis));
     metricMap.put("CallCount", MetricValueCreator.create(1));
     edgeBuilder.setMetrics(new Metrics(metricMap));
@@ -340,14 +335,13 @@ public class StructuredTraceBuilder {
     }
     for (EventRef eventRef : eventRefList) {
       if (!eventRef.getTraceId().equals(traceId)) {
-        //either this is an incomplete trace
-        //or this referenced event belongs to another trace as of now
+        // either this is an incomplete trace
+        // or this referenced event belongs to another trace as of now
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug(
               "Skipping referenced event since it belongs to another trace. EventRef.TraceId = {}  event.TraceId={}",
               HexUtils.getHex(eventRef.getTraceId()),
-              HexUtils.getHex(traceId)
-          );
+              HexUtils.getHex(traceId));
         }
 
         continue;
@@ -357,35 +351,35 @@ public class StructuredTraceBuilder {
           LOGGER.debug(
               "Referenced eventId:{} is not part of the Trace {}. May be partial trace.",
               HexUtils.getHex(eventRef.getEventId()),
-              HexUtils.getHex(eventRef.getTraceId())
-          );
+              HexUtils.getHex(eventRef.getTraceId()));
         }
         isPartialTrace = true;
         missingEventIdSet.add(eventRef.getEventId());
-        //TODO: consider creating an empty event node?
+        // TODO: consider creating an empty event node?
         continue;
       }
 
-    /*
-     * For Follow from relationship:
-     * As, both the construct `child_of` and `follow_from` represent parent-child relation in common
-     * where in one case parent is interested in child span's result while in other case not.
-     *
-     * So, to support common behaviour, we will be establish link for `follow_from` as well.
-     * commenting out this part.
-     *
-     *      if (!eventRef.getRefType().equals(EventRefType.CHILD_OF)) {
-     *
-     *   continue;
-     * }
-     * Ref: https://github.com/hypertrace/hypertrace/issues/234.
-     Note: Ideally, an event should have a single parent. It would be either via child_of or using follow_from.
-     */
+      /*
+      * For Follow from relationship:
+      * As, both the construct `child_of` and `follow_from` represent parent-child relation in common
+      * where in one case parent is interested in child span's result while in other case not.
+      *
+      * So, to support common behaviour, we will be establish link for `follow_from` as well.
+      * commenting out this part.
+      *
+      *      if (!eventRef.getRefType().equals(EventRefType.CHILD_OF)) {
+      *
+      *   continue;
+      * }
+      * Ref: https://github.com/hypertrace/hypertrace/issues/234.
+      Note: Ideally, an event should have a single parent. It would be either via child_of or using follow_from.
+      */
 
       Event parentEvent = eventMap.get(eventRef.getEventId());
 
       // Add Event to Event Edge.
-      eventEventConnectionMap.computeIfAbsent(parentEvent.getEventId(), e -> new ArrayList<>())
+      eventEventConnectionMap
+          .computeIfAbsent(parentEvent.getEventId(), e -> new ArrayList<>())
           .add(event.getEventId());
 
       // Create edge between all entity types
@@ -400,12 +394,14 @@ public class StructuredTraceBuilder {
             //  parent and child span belong to same entity. This should be solved later.
             if (parentEventEntityType != null && !parentEventEntityId.equals(childEventEntityId)) {
               // ADD ENTITY TO ENTITY EDGE
-              entityEntityConnectionMap.computeIfAbsent(parentEventEntityId, e -> new ArrayList<>())
+              entityEntityConnectionMap
+                  .computeIfAbsent(parentEventEntityId, e -> new ArrayList<>())
                   .add(childEventEntityId);
             }
           }
         } else {
-          LOGGER.warn("Unable to find the parent entity from ids in the event. "
+          LOGGER.warn(
+              "Unable to find the parent entity from ids in the event. "
                   + "EventId: {}, EntityId: {}",
               HexUtils.getHex(parentEvent.getEventId()),
               parentEventEntityId);
@@ -421,16 +417,13 @@ public class StructuredTraceBuilder {
    *
    * @return StructuredTrace
    */
-  public static StructuredTrace buildStructuredTraceFromRawSpans(List<RawSpan> rawSpanList,
-                                                                 ByteBuffer traceId,
-                                                                 String customerId) {
+  public static StructuredTrace buildStructuredTraceFromRawSpans(
+      List<RawSpan> rawSpanList, ByteBuffer traceId, String customerId) {
     return buildStructuredTraceFromRawSpans(rawSpanList, traceId, customerId, null);
   }
 
-  public static StructuredTrace buildStructuredTraceFromRawSpans(List<RawSpan> rawSpanList,
-                                                                 ByteBuffer traceId,
-                                                                 String customerId,
-                                                                 Timestamps timestamps) {
+  public static StructuredTrace buildStructuredTraceFromRawSpans(
+      List<RawSpan> rawSpanList, ByteBuffer traceId, String customerId, Timestamps timestamps) {
     Map<String, Entity> entityMap = new HashMap<>();
     // Relying on insertion ordered keyset
     LinkedHashMap<Resource, Integer> resourceIndexMap = new LinkedHashMap<>();
@@ -458,13 +451,14 @@ public class StructuredTraceBuilder {
       }
     }
 
-    StructuredTraceBuilder structuredTraceBuilder = new StructuredTraceBuilder(
-        eventList,
-        entityMap,
-        customerId,
-        traceId,
-        timestamps,
-        List.copyOf(resourceIndexMap.keySet()));
+    StructuredTraceBuilder structuredTraceBuilder =
+        new StructuredTraceBuilder(
+            eventList,
+            entityMap,
+            customerId,
+            traceId,
+            timestamps,
+            List.copyOf(resourceIndexMap.keySet()));
 
     return structuredTraceBuilder.buildStructuredTrace();
   }
@@ -476,8 +470,7 @@ public class StructuredTraceBuilder {
   private static void mergeAttributes(Entity existingEntity, Entity newEntity) {
     Attributes mergedAttributes = new Attributes(new HashMap<>());
     if (existingEntity.getAttributes() != null) {
-      mergedAttributes.getAttributeMap()
-          .putAll(existingEntity.getAttributes().getAttributeMap());
+      mergedAttributes.getAttributeMap().putAll(existingEntity.getAttributes().getAttributeMap());
     }
     if (newEntity.getAttributes() != null) {
       mergedAttributes.getAttributeMap().putAll(newEntity.getAttributes().getAttributeMap());
@@ -485,4 +478,3 @@ public class StructuredTraceBuilder {
     existingEntity.setAttributes(mergedAttributes);
   }
 }
-

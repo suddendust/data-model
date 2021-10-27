@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
 import org.hypertrace.core.datamodel.Attributes;
 import org.hypertrace.core.datamodel.Edge;
 import org.hypertrace.core.datamodel.Entity;
@@ -35,13 +34,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-
 class StructuredTraceGraphTest {
 
   private static final String CUSTOMER_ID = "customer_id";
 
-  @Mock
-  private StructuredTrace trace;
+  @Mock private StructuredTrace trace;
   private List<Event> events;
   private List<Entity> entities;
   private List<Edge> eventEdges;
@@ -92,7 +89,8 @@ class StructuredTraceGraphTest {
     assertEquals(expectedRootEntities, graph.getRootEntities());
     assertEquals(expectedRootEvents, graph.getRootEvents());
     assertEquals(events.get(sourceIdx1), graph.getParentEvent(events.get(targetIdx1)));
-    assertEquals(Lists.newArrayList(entities.get(sourceIdx1)),
+    assertEquals(
+        Lists.newArrayList(entities.get(sourceIdx1)),
         graph.getParentEntities(entities.get(targetIdx1)));
     List<Entity> root1Children = graph.getChildrenEntities(entities.get(rootIndex1));
     assertEquals(Lists.newArrayList(entities.get(targetIdx1)), root1Children);
@@ -103,14 +101,12 @@ class StructuredTraceGraphTest {
   private void setupEventAndEntityMocks(int totalEvent) {
     for (int index = 0; index < totalEvent; index++) {
       Event event = mock(Event.class);
-      when(event.getEventId())
-          .thenReturn(ByteBuffer.wrap(String.valueOf(index).getBytes()));
+      when(event.getEventId()).thenReturn(ByteBuffer.wrap(String.valueOf(index).getBytes()));
       events.add(event);
 
       expectedEventMap.put(event.getEventId(), event);
       Entity entity = mock(Entity.class);
-      when(entity.getEntityId())
-          .thenReturn(String.valueOf(index));
+      when(entity.getEntityId()).thenReturn(String.valueOf(index));
       entities.add(entity);
     }
     when(trace.getEventList()).thenReturn(events);
@@ -131,37 +127,61 @@ class StructuredTraceGraphTest {
     String entityId1 = UUID.randomUUID().toString();
     Event e1 = getEvent(generateRandomId(), entityId1);
     Entity entity1 = getEntity(entityId1, "DOCKER_CONTAINER");
-    RawSpan rawSpan1 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
-        .setEvent(e1).setEntityList(List.of(entity1)).build();
+    RawSpan rawSpan1 =
+        RawSpan.newBuilder()
+            .setCustomerId(CUSTOMER_ID)
+            .setTraceId(traceId)
+            .setEvent(e1)
+            .setEntityList(List.of(entity1))
+            .build();
 
     String entityId2 = UUID.randomUUID().toString();
     Event e2 = getEvent(generateRandomId(), entityId2);
     Entity entity2 = getEntity(entityId2, "K8S_POD");
-    RawSpan rawSpan2 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
-        .setEvent(e2).setEntityList(List.of(entity2)).build();
+    RawSpan rawSpan2 =
+        RawSpan.newBuilder()
+            .setCustomerId(CUSTOMER_ID)
+            .setTraceId(traceId)
+            .setEvent(e2)
+            .setEntityList(List.of(entity2))
+            .build();
 
     String entityId3 = UUID.randomUUID().toString();
     Event e3 = getEvent(generateRandomId(), entityId3);
     Entity entity3 = getEntity(entityId3, "DAEMONSET");
-    RawSpan rawSpan3 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
-            .setEvent(e3).setEntityList(List.of(entity3)).build();
+    RawSpan rawSpan3 =
+        RawSpan.newBuilder()
+            .setCustomerId(CUSTOMER_ID)
+            .setTraceId(traceId)
+            .setEvent(e3)
+            .setEntityList(List.of(entity3))
+            .build();
 
     // Make e2 as child of e1.
     ByteBuffer eventId1 = e1.getEventId();
-    when(e2.getEventRefList()).thenReturn(Collections.singletonList(
-        EventRef.newBuilder().setEventId(eventId1).setRefType(EventRefType.CHILD_OF)
-            .setTraceId(traceId).build()));
+    when(e2.getEventRefList())
+        .thenReturn(
+            Collections.singletonList(
+                EventRef.newBuilder()
+                    .setEventId(eventId1)
+                    .setRefType(EventRefType.CHILD_OF)
+                    .setTraceId(traceId)
+                    .build()));
 
-    //Making e3 as child of e2, follow_from construct
+    // Making e3 as child of e2, follow_from construct
     ByteBuffer eventId2 = e2.getEventId();
-    when(e3.getEventRefList()).thenReturn(Collections.singletonList(
-            EventRef.newBuilder().setEventId(eventId2).setRefType(EventRefType.FOLLOWS_FROM)
-                    .setTraceId(traceId).build()));
+    when(e3.getEventRefList())
+        .thenReturn(
+            Collections.singletonList(
+                EventRef.newBuilder()
+                    .setEventId(eventId2)
+                    .setRefType(EventRefType.FOLLOWS_FROM)
+                    .setTraceId(traceId)
+                    .build()));
 
-    StructuredTrace trace = StructuredTraceBuilder
-        .buildStructuredTraceFromRawSpans(List.of(rawSpan1, rawSpan2,rawSpan3),
-            traceId,
-            CUSTOMER_ID);
+    StructuredTrace trace =
+        StructuredTraceBuilder.buildStructuredTraceFromRawSpans(
+            List.of(rawSpan1, rawSpan2, rawSpan3), traceId, CUSTOMER_ID);
 
     assertEquals(traceId, trace.getTraceId());
     assertEquals(CUSTOMER_ID, trace.getCustomerId());
@@ -176,10 +196,14 @@ class StructuredTraceGraphTest {
     assertEquals(3, graph.getEventMap().size());
     assertEquals(1, graph.getRootEntities().size());
     assertEquals(1, graph.getRootEvents().size());
-    Map<ByteBuffer,ByteBuffer> childIdToParentIds = graph.getChildIdsToParentIds();
-    Map<ByteBuffer,List<ByteBuffer>> parentToChildEventIds = graph.getParentToChildEventIds();
-    assertTrue(childIdToParentIds.containsKey(e2.getEventId()) && childIdToParentIds.containsKey(e3.getEventId()));
-    assertTrue(parentToChildEventIds.containsKey(e1.getEventId()) && parentToChildEventIds.containsKey(e2.getEventId()));
+    Map<ByteBuffer, ByteBuffer> childIdToParentIds = graph.getChildIdsToParentIds();
+    Map<ByteBuffer, List<ByteBuffer>> parentToChildEventIds = graph.getParentToChildEventIds();
+    assertTrue(
+        childIdToParentIds.containsKey(e2.getEventId())
+            && childIdToParentIds.containsKey(e3.getEventId()));
+    assertTrue(
+        parentToChildEventIds.containsKey(e1.getEventId())
+            && parentToChildEventIds.containsKey(e2.getEventId()));
     assertTrue(graph.getParentEntities(entity2).contains(entity1));
     assertTrue(graph.getParentEntities(entity3).contains(entity2));
     assertEquals(e1, graph.getParentEvent(e2));
@@ -191,8 +215,11 @@ class StructuredTraceGraphTest {
   }
 
   private Entity getEntity(String entityId, String entityType) {
-    return Entity.newBuilder().setEntityId(entityId).setEntityType(entityType)
-        .setEntityName(entityId).setCustomerId(CUSTOMER_ID)
+    return Entity.newBuilder()
+        .setEntityId(entityId)
+        .setEntityType(entityType)
+        .setEntityName(entityId)
+        .setCustomerId(CUSTOMER_ID)
         .setAttributes(Attributes.newBuilder().setAttributeMap(new HashMap<>()).build())
         .build();
   }
@@ -205,8 +232,7 @@ class StructuredTraceGraphTest {
         .thenReturn(Attributes.newBuilder().setAttributeMap(new HashMap<>()).build());
     when(e.getEnrichedAttributes())
         .thenReturn(Attributes.newBuilder().setAttributeMap(new HashMap<>()).build());
-    when(e.getMetrics())
-        .thenReturn(Metrics.newBuilder().setMetricMap(new HashMap<>()).build());
+    when(e.getMetrics()).thenReturn(Metrics.newBuilder().setMetricMap(new HashMap<>()).build());
     return e;
   }
 
@@ -225,25 +251,39 @@ class StructuredTraceGraphTest {
     String entityId1 = UUID.randomUUID().toString();
     Event e1 = getEvent(generateRandomId(), entityId1);
     Entity entity1 = getEntity(entityId1, "DOCKER_CONTAINER");
-    RawSpan rawSpan1 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
-        .setEvent(e1).setEntityList(List.of(entity1)).build();
+    RawSpan rawSpan1 =
+        RawSpan.newBuilder()
+            .setCustomerId(CUSTOMER_ID)
+            .setTraceId(traceId)
+            .setEvent(e1)
+            .setEntityList(List.of(entity1))
+            .build();
 
     String entityId2 = UUID.randomUUID().toString();
     Event e2 = getEvent(generateRandomId(), entityId2);
     Entity entity2 = getEntity(entityId2, "K8S_POD");
-    RawSpan rawSpan2 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
-        .setEvent(e2).setEntityList(List.of(entity2)).build();
+    RawSpan rawSpan2 =
+        RawSpan.newBuilder()
+            .setCustomerId(CUSTOMER_ID)
+            .setTraceId(traceId)
+            .setEvent(e2)
+            .setEntityList(List.of(entity2))
+            .build();
 
     // Make e2 as child of e1.
     ByteBuffer eventId1 = e1.getEventId();
-    when(e2.getEventRefList()).thenReturn(Collections.singletonList(
-        EventRef.newBuilder().setEventId(eventId1).setRefType(EventRefType.CHILD_OF)
-            .setTraceId(traceId).build()));
+    when(e2.getEventRefList())
+        .thenReturn(
+            Collections.singletonList(
+                EventRef.newBuilder()
+                    .setEventId(eventId1)
+                    .setRefType(EventRefType.CHILD_OF)
+                    .setTraceId(traceId)
+                    .build()));
 
-    StructuredTrace trace = StructuredTraceBuilder
-        .buildStructuredTraceFromRawSpans(List.of(rawSpan1, rawSpan2),
-            traceId,
-            CUSTOMER_ID);
+    StructuredTrace trace =
+        StructuredTraceBuilder.buildStructuredTraceFromRawSpans(
+            List.of(rawSpan1, rawSpan2), traceId, CUSTOMER_ID);
 
     assertEquals(traceId, trace.getTraceId());
     assertEquals(CUSTOMER_ID, trace.getCustomerId());
@@ -267,17 +307,26 @@ class StructuredTraceGraphTest {
     String entityId3 = UUID.randomUUID().toString();
     Event e3 = getEvent(generateRandomId(), entityId3);
     Entity entity3 = getEntity(entityId3, "K8S_POD");
-    RawSpan rawSpan3 = RawSpan.newBuilder().setCustomerId(CUSTOMER_ID).setTraceId(traceId)
-        .setEvent(e3).setEntityList(List.of(entity3)).build();
+    RawSpan rawSpan3 =
+        RawSpan.newBuilder()
+            .setCustomerId(CUSTOMER_ID)
+            .setTraceId(traceId)
+            .setEvent(e3)
+            .setEntityList(List.of(entity3))
+            .build();
     // e3 child of e1
-    when(e3.getEventRefList()).thenReturn(Collections.singletonList(
-        EventRef.newBuilder().setEventId(eventId1).setRefType(EventRefType.CHILD_OF)
-            .setTraceId(traceId).build()));
+    when(e3.getEventRefList())
+        .thenReturn(
+            Collections.singletonList(
+                EventRef.newBuilder()
+                    .setEventId(eventId1)
+                    .setRefType(EventRefType.CHILD_OF)
+                    .setTraceId(traceId)
+                    .build()));
 
-    trace = StructuredTraceBuilder
-        .buildStructuredTraceFromRawSpans(List.of(rawSpan1, rawSpan2, rawSpan3),
-            traceId,
-            CUSTOMER_ID);
+    trace =
+        StructuredTraceBuilder.buildStructuredTraceFromRawSpans(
+            List.of(rawSpan1, rawSpan2, rawSpan3), traceId, CUSTOMER_ID);
     TraceEventsGraph traceEventsGraph = graph.getTraceEventsGraph();
     TraceEntitiesGraph traceEntitiesGraph = graph.getTraceEntitiesGraph();
 
