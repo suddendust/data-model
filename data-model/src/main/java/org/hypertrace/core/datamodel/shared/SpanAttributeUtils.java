@@ -1,5 +1,7 @@
 package org.hypertrace.core.datamodel.shared;
 
+import static org.hypertrace.core.datamodel.shared.AvroBuilderCache.fastNewBuilder;
+
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +36,7 @@ public class SpanAttributeUtils {
       Event event, String attributeKey, String defaultValue) {
     AttributeValue attributeValue = getAttributeValue(event, attributeKey);
     return attributeValue == null
-        ? AttributeValue.newBuilder().setValue(defaultValue).build()
+        ? fastNewBuilder(AttributeValue.Builder.class).setValue(defaultValue).build()
         : attributeValue;
   }
 

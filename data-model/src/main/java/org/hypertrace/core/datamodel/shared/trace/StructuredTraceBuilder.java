@@ -1,6 +1,7 @@
 package org.hypertrace.core.datamodel.shared.trace;
 
 import static java.util.Objects.nonNull;
+import static org.hypertrace.core.datamodel.shared.AvroBuilderCache.fastNewBuilder;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -182,7 +183,7 @@ public class StructuredTraceBuilder {
 
   private StructuredTrace build() {
     // start building the Structured Trace Proto object
-    Builder builder = StructuredTrace.newBuilder();
+    Builder builder = fastNewBuilder(StructuredTrace.Builder.class);
     builder.setCustomerId(customerId);
     builder.setTraceId(traceId);
     builder.setEventList(new ArrayList<>());
@@ -255,7 +256,7 @@ public class StructuredTraceBuilder {
   }
 
   private Edge buildEntityEdge(String parentEntityId, String childEntityId) {
-    Edge.Builder edgeBuilder = Edge.newBuilder();
+    Edge.Builder edgeBuilder = fastNewBuilder(Edge.Builder.class);
     edgeBuilder.setEdgeType(EdgeType.ENTITY_ENTITY);
     edgeBuilder.setSrcIndex(entityIdMapping.get(parentEntityId));
     edgeBuilder.setTgtIndex(entityIdMapping.get(childEntityId));
@@ -276,17 +277,19 @@ public class StructuredTraceBuilder {
   }
 
   private Edge buildEntityEventEdge(String entityId, ByteBuffer eventId) {
-    Edge.Builder edgeBuilder = Edge.newBuilder();
+    Edge.Builder edgeBuilder = fastNewBuilder(Edge.Builder.class);
     edgeBuilder.setEdgeType(EdgeType.ENTITY_EVENT);
     edgeBuilder.setSrcIndex(entityIdMapping.get(entityId));
     edgeBuilder.setTgtIndex(eventIdMapping.get(eventId));
-    edgeBuilder.setAttributes(Attributes.newBuilder().setAttributeMap(new HashMap<>()).build());
-    edgeBuilder.setMetrics(Metrics.newBuilder().setMetricMap(new HashMap<>()).build());
+    edgeBuilder.setAttributes(
+        fastNewBuilder(Attributes.Builder.class).setAttributeMap(new HashMap<>()).build());
+    edgeBuilder.setMetrics(
+        fastNewBuilder(Metrics.Builder.class).setMetricMap(new HashMap<>()).build());
     return edgeBuilder.build();
   }
 
   private Edge buildEventEdge(ByteBuffer parentEventId, ByteBuffer childEventId) {
-    Edge.Builder edgeBuilder = Edge.newBuilder();
+    Edge.Builder edgeBuilder = fastNewBuilder(Edge.Builder.class);
     edgeBuilder.setSrcIndex(eventIdMapping.get(parentEventId));
     edgeBuilder.setTgtIndex(eventIdMapping.get(childEventId));
     edgeBuilder.setEdgeType(EdgeType.EVENT_EVENT);

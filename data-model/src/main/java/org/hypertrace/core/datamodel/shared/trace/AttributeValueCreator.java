@@ -1,5 +1,7 @@
 package org.hypertrace.core.datamodel.shared.trace;
 
+import static org.hypertrace.core.datamodel.shared.AvroBuilderCache.fastNewBuilder;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,19 +12,19 @@ import org.hypertrace.core.datamodel.shared.HexUtils;
 public class AttributeValueCreator {
 
   public static AttributeValue create(String value) {
-    return AttributeValue.newBuilder().setValue(value).build();
+    return fastNewBuilder(AttributeValue.Builder.class).setValue(value).build();
   }
 
   public static AttributeValue create(boolean value) {
-    return AttributeValue.newBuilder().setValue(String.valueOf(value)).build();
+    return fastNewBuilder(AttributeValue.Builder.class).setValue(String.valueOf(value)).build();
   }
 
   public static AttributeValue create(int value) {
-    return AttributeValue.newBuilder().setValue(String.valueOf(value)).build();
+    return fastNewBuilder(AttributeValue.Builder.class).setValue(String.valueOf(value)).build();
   }
 
   public static AttributeValue create(List<String> values) {
-    return AttributeValue.newBuilder().setValueList(values).build();
+    return fastNewBuilder(AttributeValue.Builder.class).setValueList(values).build();
   }
 
   public static AttributeValue createFromByteBuffers(Set<ByteBuffer> values) {
@@ -31,6 +33,6 @@ public class AttributeValueCreator {
         value -> {
           list.add(new String(HexUtils.getBytes(value)));
         });
-    return AttributeValue.newBuilder().setValueList(list).build();
+    return fastNewBuilder(AttributeValue.Builder.class).setValueList(list).build();
   }
 }
