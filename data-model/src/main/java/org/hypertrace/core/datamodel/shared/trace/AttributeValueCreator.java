@@ -23,6 +23,18 @@ public class AttributeValueCreator {
     return fastNewBuilder(AttributeValue.Builder.class).setValue(String.valueOf(value)).build();
   }
 
+  public static AttributeValue create(long value) {
+    return fastNewBuilder(AttributeValue.Builder.class).setValue(String.valueOf(value)).build();
+  }
+
+  public static AttributeValue create(float value) {
+    return fastNewBuilder(AttributeValue.Builder.class).setValue(String.valueOf(value)).build();
+  }
+
+  public static AttributeValue create(double value) {
+    return fastNewBuilder(AttributeValue.Builder.class).setValue(String.valueOf(value)).build();
+  }
+
   public static AttributeValue create(List<String> values) {
     return fastNewBuilder(AttributeValue.Builder.class).setValueList(values).build();
   }
