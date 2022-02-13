@@ -1,7 +1,6 @@
 package org.hypertrace.core.datamodel.shared.trace;
 
 import static java.util.Objects.nonNull;
-import static org.hypertrace.core.datamodel.shared.AvroBuilderCache.fastNewBuilder;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -16,20 +15,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.hypertrace.core.datamodel.AttributeValue;
-import org.hypertrace.core.datamodel.Attributes;
-import org.hypertrace.core.datamodel.EventRef;
-import org.hypertrace.core.datamodel.MetricValue;
-import org.hypertrace.core.datamodel.Metrics;
-import org.hypertrace.core.datamodel.RawSpan;
-import org.hypertrace.core.datamodel.StructuredTrace;
-import org.hypertrace.core.datamodel.StructuredTrace.Builder;
-import org.hypertrace.core.datamodel.Timestamps;
+import org.hypertrace.core.datamodel.entity.AttributeValue;
+import org.hypertrace.core.datamodel.entity.Attributes;
 import org.hypertrace.core.datamodel.entity.Edge;
 import org.hypertrace.core.datamodel.entity.EdgeType;
 import org.hypertrace.core.datamodel.entity.Entity;
 import org.hypertrace.core.datamodel.entity.Event;
+import org.hypertrace.core.datamodel.entity.EventRef;
+import org.hypertrace.core.datamodel.entity.MetricValue;
+import org.hypertrace.core.datamodel.entity.Metrics;
+import org.hypertrace.core.datamodel.entity.RawSpan;
 import org.hypertrace.core.datamodel.entity.Resource;
+import org.hypertrace.core.datamodel.entity.StructuredTrace;
+import org.hypertrace.core.datamodel.entity.Timestamps;
 import org.hypertrace.core.datamodel.shared.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,25 +181,25 @@ public class StructuredTraceBuilder {
 
   private StructuredTrace build() {
     // start building the Structured Trace Proto object
-    Builder builder = fastNewBuilder(StructuredTrace.Builder.class);
-    builder.setCustomerId(customerId);
-    builder.setTraceId(traceId);
-    builder.setEventList(new ArrayList<>());
-    builder.setEntityList(new ArrayList<>());
-    builder.setEventEdgeList(new ArrayList<>());
-    builder.setEntityEdgeList(new ArrayList<>());
-    builder.setEntityEventEdgeList(new ArrayList<>());
-    builder.setResourceList(this.resourceList);
+    StructuredTrace structuredTrace = new StructuredTrace();
+    structuredTrace.setCustomerId(customerId);
+    structuredTrace.setTraceId(traceId);
+    structuredTrace.setEventList(new ArrayList<>());
+    structuredTrace.setEntityList(new ArrayList<>());
+    structuredTrace.setEventEdgeList(new ArrayList<>());
+    structuredTrace.setEntityEdgeList(new ArrayList<>());
+    structuredTrace.setEntityEventEdgeList(new ArrayList<>());
+    structuredTrace.setResourceList(this.resourceList);
 
     // Node Builders
     // Initialize EVENT NODE
     for (ByteBuffer eventId : orderedEventNodes) {
-      builder.getEventList().add(eventMap.get(eventId));
+      structuredTrace.getEventList().add(eventMap.get(eventId));
     }
 
     // Initialize ENTITY NODE builders
     for (String entityId : orderedEntityNodes) {
-      builder.getEntityList().add(entityMap.get(entityId));
+      structuredTrace.getEntityList().add(entityMap.get(entityId));
     }
 
     // Build Event Edge
@@ -209,7 +207,7 @@ public class StructuredTraceBuilder {
       ByteBuffer parentEventId = entry.getKey();
       for (ByteBuffer childEventId : entry.getValue()) {
         Edge edge = buildEventEdge(parentEventId, childEventId);
-        builder.getEventEdgeList().add(edge);
+        structuredTrace.getEventEdgeList().add(edge);
       }
     }
 
@@ -218,7 +216,7 @@ public class StructuredTraceBuilder {
       String parentEntityId = entry.getKey();
       for (String childEntityId : entry.getValue()) {
         Edge edge = buildEntityEdge(parentEntityId, childEntityId);
-        builder.getEntityEdgeList().add(edge);
+        structuredTrace.getEntityEdgeList().add(edge);
       }
     }
     // Entity Event Edge
@@ -226,7 +224,7 @@ public class StructuredTraceBuilder {
       String entityId = entry.getKey();
       for (ByteBuffer eventId : entry.getValue()) {
         Edge edge = buildEntityEventEdge(entityId, eventId);
-        builder.getEntityEventEdgeList().add(edge);
+        structuredTrace.getEntityEventEdgeList().add(edge);
       }
     }
 
@@ -246,20 +244,20 @@ public class StructuredTraceBuilder {
     metricMap.put("Duration", MetricValueCreator.create(durationInMillis));
     metricMap.put("CallCount", MetricValueCreator.create(1));
 
-    builder.setTraceId(traceId);
-    builder.setStartTimeMillis(traceStartTime);
-    builder.setEndTimeMillis(traceEndTime);
-    builder.setAttributes(new Attributes(attributeMap));
-    builder.setMetrics(new Metrics(metricMap));
-    builder.setTimestamps(timestamps);
-    return builder.build();
+    structuredTrace.setTraceId(traceId);
+    structuredTrace.setStartTimeMillis(traceStartTime);
+    structuredTrace.setEndTimeMillis(traceEndTime);
+    structuredTrace.setAttributes(new Attributes(attributeMap));
+    structuredTrace.setMetrics(new Metrics(metricMap));
+    structuredTrace.setTimestamps(timestamps);
+    return structuredTrace;
   }
 
   private Edge buildEntityEdge(String parentEntityId, String childEntityId) {
-    Edge.Builder edgeBuilder = fastNewBuilder(Edge.Builder.class);
-    edgeBuilder.setEdgeType(EdgeType.ENTITY_ENTITY);
-    edgeBuilder.setSrcIndex(entityIdMapping.get(parentEntityId));
-    edgeBuilder.setTgtIndex(entityIdMapping.get(childEntityId));
+    Edge edge = new Edge();
+    edge.setEdgeType(EdgeType.ENTITY_ENTITY);
+    edge.setSrcIndex(entityIdMapping.get(parentEntityId));
+    edge.setTgtIndex(entityIdMapping.get(childEntityId));
     Entity parentEntity = entityMap.get(parentEntityId);
     Entity childEntity = entityMap.get(childEntityId);
     // todo: define constants for these things.
@@ -269,35 +267,35 @@ public class StructuredTraceBuilder {
     Attributes.put("CallerEntityName", AttributeValueCreator.create(parentEntity.getEntityName()));
     Attributes.put("CalleeEntityType", AttributeValueCreator.create(childEntity.getEntityType()));
     Attributes.put("CalleeEntityName", AttributeValueCreator.create(childEntity.getEntityName()));
-    edgeBuilder.setAttributes(new Attributes(Attributes));
+    edge.setAttributes(new Attributes(Attributes));
 
     // metrics
-    edgeBuilder.setMetrics(new Metrics(new HashMap<>()));
-    return edgeBuilder.build();
+    edge.setMetrics(new Metrics(new HashMap<>()));
+    return edge;
   }
 
   private Edge buildEntityEventEdge(String entityId, ByteBuffer eventId) {
-    Edge.Builder edgeBuilder = fastNewBuilder(Edge.Builder.class);
-    edgeBuilder.setEdgeType(EdgeType.ENTITY_EVENT);
-    edgeBuilder.setSrcIndex(entityIdMapping.get(entityId));
-    edgeBuilder.setTgtIndex(eventIdMapping.get(eventId));
-    edgeBuilder.setAttributes(
-        fastNewBuilder(Attributes.Builder.class).setAttributeMap(new HashMap<>()).build());
-    edgeBuilder.setMetrics(
-        fastNewBuilder(Metrics.Builder.class).setMetricMap(new HashMap<>()).build());
-    return edgeBuilder.build();
+    Edge edge = new Edge();
+    edge.setEdgeType(EdgeType.ENTITY_EVENT);
+    edge.setSrcIndex(entityIdMapping.get(entityId));
+    edge.setTgtIndex(eventIdMapping.get(eventId));
+    edge.setAttributes(
+        new Attributes(new HashMap<>()));
+    edge.setMetrics(
+        new Metrics(new HashMap<>()));
+    return edge;
   }
 
   private Edge buildEventEdge(ByteBuffer parentEventId, ByteBuffer childEventId) {
-    Edge.Builder edgeBuilder = fastNewBuilder(Edge.Builder.class);
-    edgeBuilder.setSrcIndex(eventIdMapping.get(parentEventId));
-    edgeBuilder.setTgtIndex(eventIdMapping.get(childEventId));
-    edgeBuilder.setEdgeType(EdgeType.EVENT_EVENT);
+    Edge edge = new Edge();
+    edge.setSrcIndex(eventIdMapping.get(parentEventId));
+    edge.setTgtIndex(eventIdMapping.get(childEventId));
+    edge.setEdgeType(EdgeType.EVENT_EVENT);
     Event parentEvent = eventMap.get(parentEventId);
     Event childEvent = eventMap.get(childEventId);
 
-    edgeBuilder.setStartTimeMillis(parentEvent.getStartTimeMillis());
-    edgeBuilder.setEndTimeMillis(parentEvent.getEndTimeMillis());
+    edge.setStartTimeMillis(parentEvent.getStartTimeMillis());
+    edge.setEndTimeMillis(parentEvent.getEndTimeMillis());
 
     // edge attributes
     HashMap<String, AttributeValue> attributeMap = new HashMap<>();
@@ -317,7 +315,7 @@ public class StructuredTraceBuilder {
     attributeMap.put("CallerEntityNames", AttributeValueCreator.create(callerEntityNames));
     attributeMap.put("CalleeEntityNames", AttributeValueCreator.create(calleeEntityNames));
 
-    edgeBuilder.setAttributes(new Attributes(attributeMap));
+    edge.setAttributes(new Attributes(attributeMap));
 
     // edge metrics, only duration and call count for now
     HashMap<String, MetricValue> metricMap = new HashMap<>();
@@ -326,9 +324,9 @@ public class StructuredTraceBuilder {
     // todo: move these things to Annotation Framework
     metricMap.put("Duration", MetricValueCreator.create(durationInMillis));
     metricMap.put("CallCount", MetricValueCreator.create(1));
-    edgeBuilder.setMetrics(new Metrics(metricMap));
+    edge.setMetrics(new Metrics(metricMap));
 
-    return edgeBuilder.build();
+    return edge;
   }
 
   private void processEventRefList(ByteBuffer traceId, Event event) {

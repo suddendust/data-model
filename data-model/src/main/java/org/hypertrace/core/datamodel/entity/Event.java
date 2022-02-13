@@ -13,7 +13,7 @@ public class Event {
   private String customer_id;
   private ByteBuffer event_id;
   private String event_name;
-  private String entity_id_list;
+  private List<String> entity_id_list;
   private Integer resource_index;
   private Attributes attributes;
   private Long start_time_millis;
@@ -40,7 +40,7 @@ public class Event {
     return event_name;
   }
 
-  public String getEntityIdList() {
+  public List<String> getEntityIdList() {
     return entity_id_list;
   }
 
@@ -94,5 +94,74 @@ public class Event {
 
   public Rpc getRpc() {
     return rpc;
+  }
+
+  public void setCustomerId(String customerId) {
+    this.customer_id = customerId;
+  }
+
+  public void setEventId(ByteBuffer eventId) {
+    this.event_id = eventId;
+  }
+
+  public void setEventName(String eventName) {
+    this.event_name = eventName;
+  }
+
+  public void setEntityIdList(List<String> entityIdList) {
+    this.entity_id_list = entityIdList;
+  }
+
+  public void setResourceIndex(Integer resourceIndex) {
+    this.resource_index = resourceIndex;
+  }
+
+  public void setAttributes(Attributes attributes) {
+    this.attributes = attributes;
+  }
+
+  public void setStartTimeMillis(Long startTimeMillis) {
+    this.start_time_millis = startTimeMillis;
+  }
+
+  public void setEndTimeMillis(Long endTimeMillis) {
+    this.end_time_millis = endTimeMillis;
+  }
+
+  public void setMetrics(Metrics metrics) {
+    this.metrics = metrics;
+  }
+
+  public void setEventRefList(List<EventRef> eventRefList) {
+    this.event_ref_list = eventRefList;
+  }
+
+  public void setEnrichedAttributes(Attributes enrichedAttributes) {
+    this.enriched_attributes = enrichedAttributes;
+  }
+
+  public void setJaegerFields(
+      JaegerFields jaegerFields) {
+    this.jaegerFields = jaegerFields;
+  }
+
+  public void setHttp(Http http) {
+    this.http = http;
+  }
+
+  public void setGrpc(Grpc grpc) {
+    this.grpc = grpc;
+  }
+
+  public void setSql(Sql sql) {
+    this.sql = sql;
+  }
+
+  public void setServiceName(String serviceName) {
+    this.service_name = serviceName;
+  }
+
+  public void setRpc(Rpc rpc) {
+    this.rpc = rpc;
   }
 }

@@ -16,6 +16,8 @@ import org.hypertrace.core.datamodel.Event;
 import org.hypertrace.core.datamodel.RawSpan;
 import org.hypertrace.core.datamodel.Resource;
 import org.hypertrace.core.datamodel.StructuredTrace;
+import org.hypertrace.core.datamodel.entity.Attributes;
+import org.hypertrace.core.datamodel.entity.Resource;
 import org.junit.jupiter.api.Test;
 
 class StructuredTraceBuilderTest {

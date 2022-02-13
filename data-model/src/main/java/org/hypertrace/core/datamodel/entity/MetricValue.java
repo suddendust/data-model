@@ -25,4 +25,24 @@ public class MetricValue {
   public Map<String, Double> getValueMap() {
     return value_map;
   }
+
+  public MetricValue setValue(Double value) {
+    this.value = value;
+    return this;
+  }
+
+  public MetricValue setBinaryValue(ByteBuffer binary_value) {
+    this.binary_value = binary_value;
+    return this;
+  }
+
+  public MetricValue setValueList(List<Double> value_list) {
+    this.value_list = value_list;
+    return this;
+  }
+
+  public MetricValue setValueMap(Map<String, Double> value_map) {
+    this.value_map = value_map;
+    return this;
+  }
 }

@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.util.LinkedHashSet;
 import java.util.List;
 import org.hypertrace.core.datamodel.AttributeValue;
+import org.hypertrace.core.datamodel.entity.AttributeValue;
 import org.junit.jupiter.api.Test;
 
 class AttributeValueCreatorTest {

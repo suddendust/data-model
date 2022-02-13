@@ -8,6 +8,10 @@ public class Entity {
   private Attributes attributes;
   private EntityIds related_entity_ids;
 
+  public void setAttributes(Attributes attributes) {
+    this.attributes = attributes;
+  }
+
   public String getCustomerId() {
     return customer_id;
   }

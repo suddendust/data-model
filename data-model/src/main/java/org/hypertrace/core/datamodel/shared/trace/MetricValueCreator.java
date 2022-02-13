@@ -1,21 +1,18 @@
 package org.hypertrace.core.datamodel.shared.trace;
 
-import static org.hypertrace.core.datamodel.shared.AvroBuilderCache.fastNewBuilder;
-
-import org.hypertrace.core.datamodel.MetricValue;
 import org.hypertrace.core.datamodel.entity.MetricValue;
 
 public class MetricValueCreator {
 
   public static MetricValue create(double value) {
-    return fastNewBuilder(MetricValue.Builder.class).setValue(value).build();
+    return new MetricValue().setValue(value);
   }
 
   public static MetricValue create(long value) {
-    return fastNewBuilder(MetricValue.Builder.class).setValue((double) value).build();
+    return new MetricValue().setValue((double) value);
   }
 
   public static MetricValue create(int value) {
-    return fastNewBuilder(MetricValue.Builder.class).setValue((double) value).build();
+    return new MetricValue().setValue((double) value);
   }
 }

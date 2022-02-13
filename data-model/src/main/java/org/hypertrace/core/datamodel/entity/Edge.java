@@ -37,4 +37,39 @@ public class Edge {
   public Metrics getMetrics() {
     return metrics;
   }
+
+  public Edge setEdgeType(EdgeType edge_type) {
+    this.edge_type = edge_type;
+    return this;
+  }
+
+  public Edge setSrcIndex(Integer src_index) {
+    this.src_index = src_index;
+    return this;
+  }
+
+  public Edge setTgtIndex(Integer tgt_index) {
+    this.tgt_index = tgt_index;
+    return this;
+  }
+
+  public Edge setAttributes(Attributes attributes) {
+    this.attributes = attributes;
+    return this;
+  }
+
+  public Edge setStartTimeMillis(Long start_time_millis) {
+    this.start_time_millis = start_time_millis;
+    return this;
+  }
+
+  public Edge setEndTimeMillis(Long end_time_millis) {
+    this.end_time_millis = end_time_millis;
+    return this;
+  }
+
+  public Edge setMetrics(Metrics metrics) {
+    this.metrics = metrics;
+    return this;
+  }
 }

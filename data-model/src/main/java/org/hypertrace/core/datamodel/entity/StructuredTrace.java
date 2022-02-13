@@ -85,4 +85,93 @@ public class StructuredTrace {
   public Timestamps getTimestamps() {
     return timestamps;
   }
+
+  public StructuredTrace setCustomerId(String customer_id) {
+    this.customer_id = customer_id;
+    return this;
+  }
+
+  public StructuredTrace setTraceId(ByteBuffer trace_id) {
+    this.trace_id = trace_id;
+    return this;
+  }
+
+  public StructuredTrace setEntityList(
+      List<Entity> entity_list) {
+    this.entity_list = entity_list;
+    return this;
+  }
+
+  public StructuredTrace setResourceList(
+      List<Resource> resource_list) {
+    this.resource_list = resource_list;
+    return this;
+  }
+
+  public StructuredTrace setEventList(
+      List<Event> event_list) {
+    this.event_list = event_list;
+    return this;
+  }
+
+  public StructuredTrace setAttributes(Attributes attributes) {
+    this.attributes = attributes;
+    return this;
+  }
+
+  public StructuredTrace setStartTimeMillis(Long start_time_millis) {
+    this.start_time_millis = start_time_millis;
+    return this;
+  }
+
+  public StructuredTrace setEndTimeMillis(Long end_time_millis) {
+    this.end_time_millis = end_time_millis;
+    return this;
+  }
+
+  public StructuredTrace setMetrics(Metrics metrics) {
+    this.metrics = metrics;
+    return this;
+  }
+
+  public StructuredTrace setEntityEdgeList(
+      List<Edge> entity_edge_list) {
+    this.entity_edge_list = entity_edge_list;
+    return this;
+  }
+
+  public StructuredTrace setEventEdgeList(
+      List<Edge> event_edge_list) {
+    this.event_edge_list = event_edge_list;
+    return this;
+  }
+
+  public StructuredTrace setEntityEventEdgeList(
+      List<Edge> entity_event_edge_list) {
+    this.entity_event_edge_list = entity_event_edge_list;
+    return this;
+  }
+
+  public StructuredTrace setEntityEntityGraph(
+      Graph entity_entity_graph) {
+    this.entity_entity_graph = entity_entity_graph;
+    return this;
+  }
+
+  public StructuredTrace setEventEventGraph(
+      Graph event_event_graph) {
+    this.event_event_graph = event_event_graph;
+    return this;
+  }
+
+  public StructuredTrace setEntityEventGraph(
+      Graph entity_event_graph) {
+    this.entity_event_graph = entity_event_graph;
+    return this;
+  }
+
+  public StructuredTrace setTimestamps(Timestamps timestamps) {
+    this.timestamps = timestamps;
+    return this;
+  }
 }

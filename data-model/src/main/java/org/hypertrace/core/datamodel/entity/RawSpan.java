@@ -1,12 +1,13 @@
 package org.hypertrace.core.datamodel.entity;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 public class RawSpan {
 
   private String customer_id;
   private ByteBuffer trace_id;
-  private Entity entity_list;
+  private List<Entity> entity_list;
   private Resource resource;
   private Event event;
   private Long received_time_millis;
@@ -19,7 +20,7 @@ public class RawSpan {
     return trace_id;
   }
 
-  public Entity getEntityList() {
+  public List<Entity> getEntityList() {
     return entity_list;
   }
 

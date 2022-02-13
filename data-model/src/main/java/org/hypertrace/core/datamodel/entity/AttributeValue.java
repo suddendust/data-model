@@ -25,4 +25,24 @@ public class AttributeValue {
   public Map<String, String> getValueMap() {
     return value_map;
   }
+
+  public AttributeValue setValue(String value) {
+    this.value = value;
+    return this;
+  }
+
+  public AttributeValue setBinaryValue(ByteBuffer binary_value) {
+    this.binary_value = binary_value;
+    return this;
+  }
+
+  public AttributeValue setValueList(List<String> value_list) {
+    this.value_list = value_list;
+    return this;
+  }
+
+  public AttributeValue setValueMap(Map<String, String> value_map) {
+    this.value_map = value_map;
+    return this;
+  }
 }
