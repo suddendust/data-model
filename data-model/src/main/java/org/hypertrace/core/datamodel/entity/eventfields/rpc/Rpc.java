@@ -5,4 +5,16 @@ public class Rpc {
   private String system;
   private String service;
   private String method;
+
+  public String getSystem() {
+    return system;
+  }
+
+  public String getService() {
+    return service;
+  }
+
+  public String getMethod() {
+    return method;
+  }
 }

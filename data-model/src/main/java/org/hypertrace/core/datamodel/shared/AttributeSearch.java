@@ -1,7 +1,7 @@
 package org.hypertrace.core.datamodel.shared;
 
 import java.util.Optional;
-import org.hypertrace.core.datamodel.Attributes;
+import org.hypertrace.core.datamodel.entity.Attributes;
 
 public class AttributeSearch {
 

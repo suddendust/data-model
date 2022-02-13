@@ -12,9 +12,9 @@ import io.micrometer.core.instrument.Timer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.hypertrace.core.datamodel.StructuredTrace;
-import org.hypertrace.core.datamodel.TimestampRecord;
-import org.hypertrace.core.datamodel.Timestamps;
+import org.hypertrace.core.datamodel.entity.StructuredTrace;
+import org.hypertrace.core.datamodel.entity.TimestampRecord;
+import org.hypertrace.core.datamodel.entity.Timestamps;
 import org.junit.jupiter.api.Test;
 
 class DataflowMetricUtilsTest {

@@ -27,4 +27,72 @@ public class Event {
   private Sql sql;
   private String service_name;
   private Rpc rpc;
+
+  public String getCustomerId() {
+    return customer_id;
+  }
+
+  public ByteBuffer getEventId() {
+    return event_id;
+  }
+
+  public String getEventName() {
+    return event_name;
+  }
+
+  public String getEntityIdList() {
+    return entity_id_list;
+  }
+
+  public Integer getResourceIndex() {
+    return resource_index;
+  }
+
+  public Attributes getAttributes() {
+    return attributes;
+  }
+
+  public Long getStartTimeMillis() {
+    return start_time_millis;
+  }
+
+  public Long getEndTimeMillis() {
+    return end_time_millis;
+  }
+
+  public Metrics getMetrics() {
+    return metrics;
+  }
+
+  public List<EventRef> getEventRefList() {
+    return event_ref_list;
+  }
+
+  public Attributes getEnrichedAttributes() {
+    return enriched_attributes;
+  }
+
+  public JaegerFields getJaegerFields() {
+    return jaegerFields;
+  }
+
+  public Http getHttp() {
+    return http;
+  }
+
+  public Grpc getGrpc() {
+    return grpc;
+  }
+
+  public Sql getSql() {
+    return sql;
+  }
+
+  public String getServiceName() {
+    return service_name;
+  }
+
+  public Rpc getRpc() {
+    return rpc;
+  }
 }

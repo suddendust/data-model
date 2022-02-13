@@ -3,6 +3,7 @@ package org.hypertrace.core.datamodel.shared.trace;
 import static org.hypertrace.core.datamodel.shared.AvroBuilderCache.fastNewBuilder;
 
 import org.hypertrace.core.datamodel.MetricValue;
+import org.hypertrace.core.datamodel.entity.MetricValue;
 
 public class MetricValueCreator {
 

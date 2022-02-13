@@ -6,4 +6,12 @@ public class ResponseMetadata {
 
   private String content_type;
   private Map<String, String> other_metadata;
+
+  public String getContentType() {
+    return content_type;
+  }
+
+  public Map<String, String> getOtherMetadata() {
+    return other_metadata;
+  }
 }

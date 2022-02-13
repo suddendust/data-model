@@ -7,4 +7,23 @@ public class Sql {
   private String params;
   private String sqlstate;
 
+  public String getQuery() {
+    return query;
+  }
+
+  public String getDbType() {
+    return db_type;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public String getParams() {
+    return params;
+  }
+
+  public String getSqlstate() {
+    return sqlstate;
+  }
 }

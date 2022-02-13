@@ -11,4 +11,32 @@ public class Request {
   private Integer size;
   private Map<String, String> metadata;
   private RequestMetadata request_metadata;
+
+  public String getMethod() {
+    return method;
+  }
+
+  public String getHostPort() {
+    return host_port;
+  }
+
+  public String getCallOptions() {
+    return call_options;
+  }
+
+  public String getBody() {
+    return body;
+  }
+
+  public Integer getSize() {
+    return size;
+  }
+
+  public Map<String, String> getMetadata() {
+    return metadata;
+  }
+
+  public RequestMetadata getRequestMetadata() {
+    return request_metadata;
+  }
 }

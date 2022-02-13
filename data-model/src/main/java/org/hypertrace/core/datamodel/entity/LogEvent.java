@@ -8,4 +8,24 @@ public class LogEvent {
   private ByteBuffer span_id;
   private ByteBuffer trace_id;
   private Attributes attributes;
+
+  public Long getTimestampNanos() {
+    return timestamp_nanos;
+  }
+
+  public String getTenantId() {
+    return tenant_id;
+  }
+
+  public ByteBuffer getSpanId() {
+    return span_id;
+  }
+
+  public ByteBuffer getTraceId() {
+    return trace_id;
+  }
+
+  public Attributes getAttributes() {
+    return attributes;
+  }
 }

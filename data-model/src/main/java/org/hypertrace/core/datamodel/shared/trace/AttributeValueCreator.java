@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.hypertrace.core.datamodel.AttributeValue;
+import org.hypertrace.core.datamodel.entity.AttributeValue;
 import org.hypertrace.core.datamodel.shared.HexUtils;
 
 public class AttributeValueCreator {

@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.hypertrace.core.datamodel.Edge;
-import org.hypertrace.core.datamodel.Entity;
-import org.hypertrace.core.datamodel.StructuredTrace;
+import org.hypertrace.core.datamodel.entity.Edge;
+import org.hypertrace.core.datamodel.entity.Entity;
+import org.hypertrace.core.datamodel.entity.StructuredTrace;
 
 public class TraceEntitiesGraph {
 

@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.avro.reflect.Nullable;
-import org.hypertrace.core.datamodel.AttributeValue;
-import org.hypertrace.core.datamodel.Attributes;
-import org.hypertrace.core.datamodel.Event;
+import org.hypertrace.core.datamodel.entity.AttributeValue;
+import org.hypertrace.core.datamodel.entity.Attributes;
+import org.hypertrace.core.datamodel.entity.Event;
 
 /**
  * Span being a very generic data structure with different attributes, reading attributes from Span

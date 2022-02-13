@@ -1,9 +1,9 @@
 package org.hypertrace.core.datamodel.shared;
 
 import java.util.Optional;
-import org.hypertrace.core.datamodel.AttributeValue;
-import org.hypertrace.core.datamodel.Event;
-import org.hypertrace.core.datamodel.StructuredTrace;
+import org.hypertrace.core.datamodel.entity.AttributeValue;
+import org.hypertrace.core.datamodel.entity.Event;
+import org.hypertrace.core.datamodel.entity.StructuredTrace;
 
 /** Convenience methods to deal with StructuredTrace attributes. */
 public class TraceAttributeUtils {

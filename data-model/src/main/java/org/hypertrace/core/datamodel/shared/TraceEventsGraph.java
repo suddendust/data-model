@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.hypertrace.core.datamodel.Edge;
-import org.hypertrace.core.datamodel.Event;
-import org.hypertrace.core.datamodel.StructuredTrace;
+import org.hypertrace.core.datamodel.entity.Edge;
+import org.hypertrace.core.datamodel.entity.Event;
+import org.hypertrace.core.datamodel.entity.StructuredTrace;
 
 public class TraceEventsGraph {
 

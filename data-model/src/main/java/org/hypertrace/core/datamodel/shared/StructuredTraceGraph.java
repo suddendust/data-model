@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.hypertrace.core.datamodel.Entity;
-import org.hypertrace.core.datamodel.Event;
-import org.hypertrace.core.datamodel.StructuredTrace;
+import org.hypertrace.core.datamodel.entity.Entity;
+import org.hypertrace.core.datamodel.entity.Event;
+import org.hypertrace.core.datamodel.entity.StructuredTrace;
 
 /**
  * Builds Event graph, and Entity graph from Structured Trace This is a helper class to make it easy
