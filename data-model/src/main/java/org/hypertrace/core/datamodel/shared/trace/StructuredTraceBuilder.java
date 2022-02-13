@@ -68,7 +68,7 @@ public class StructuredTraceBuilder {
     this.resourceList = resourceList;
     this.customerId = customerId;
     this.traceId = traceId;
-    this.entityMap = Map.copyOf(entityMap);
+    this.entityMap = new HashMap<>(entityMap);
     eventMap = new HashMap<>();
     eventEventConnectionMap = new HashMap<>();
     entityEntityConnectionMap = new HashMap<>();
@@ -279,10 +279,8 @@ public class StructuredTraceBuilder {
     edge.setEdgeType(EdgeType.ENTITY_EVENT);
     edge.setSrcIndex(entityIdMapping.get(entityId));
     edge.setTgtIndex(eventIdMapping.get(eventId));
-    edge.setAttributes(
-        new Attributes(new HashMap<>()));
-    edge.setMetrics(
-        new Metrics(new HashMap<>()));
+    edge.setAttributes(new Attributes(new HashMap<>()));
+    edge.setMetrics(new Metrics(new HashMap<>()));
     return edge;
   }
 
@@ -459,7 +457,7 @@ public class StructuredTraceBuilder {
             customerId,
             traceId,
             timestamps,
-            List.copyOf(resourceIndexMap.keySet()));
+            new ArrayList<>(resourceIndexMap.keySet()));
 
     return structuredTraceBuilder.buildStructuredTrace();
   }

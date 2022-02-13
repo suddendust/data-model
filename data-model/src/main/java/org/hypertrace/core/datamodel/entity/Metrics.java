@@ -6,8 +6,7 @@ public class Metrics {
 
   private Map<String, MetricValue> metric_map;
 
-  public Metrics(
-      Map<String, MetricValue> metric_map) {
+  public Metrics(Map<String, MetricValue> metric_map) {
     this.metric_map = metric_map;
   }
 

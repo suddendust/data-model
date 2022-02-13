@@ -6,8 +6,7 @@ public class Attributes {
 
   private Map<String, AttributeValue> attribute_map;
 
-  public Attributes(
-      Map<String, AttributeValue> attribute_map) {
+  public Attributes(Map<String, AttributeValue> attribute_map) {
     this.attribute_map = attribute_map;
   }
 

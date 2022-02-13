@@ -140,8 +140,7 @@ public class Event {
     this.enriched_attributes = enrichedAttributes;
   }
 
-  public void setJaegerFields(
-      JaegerFields jaegerFields) {
+  public void setJaegerFields(JaegerFields jaegerFields) {
     this.jaegerFields = jaegerFields;
   }
 

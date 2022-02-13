@@ -1,13 +1,15 @@
 package org.hypertrace.core.datamodel.shared;
 
+import java.util.Map;
 import java.util.Optional;
+import org.hypertrace.core.datamodel.entity.AttributeValue;
 import org.hypertrace.core.datamodel.entity.Attributes;
 
 public class AttributeSearch {
 
   public static Optional<String> searchForAttribute(Attributes attributes, String key) {
     if (attributes != null && attributes.getAttributeMap() != null) {
-      var attributeMap = attributes.getAttributeMap();
+       Map<String, AttributeValue> attributeMap = attributes.getAttributeMap();
       if (attributeMap.containsKey(key)) {
         return Optional.of(attributeMap.get(key).getValue());
       }

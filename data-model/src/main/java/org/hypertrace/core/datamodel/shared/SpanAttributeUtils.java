@@ -1,7 +1,5 @@
 package org.hypertrace.core.datamodel.shared;
 
-import static org.hypertrace.core.datamodel.shared.AvroBuilderCache.fastNewBuilder;
-
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -35,9 +33,7 @@ public class SpanAttributeUtils {
   public static AttributeValue getAttributeValueWithDefault(
       Event event, String attributeKey, String defaultValue) {
     AttributeValue attributeValue = getAttributeValue(event, attributeKey);
-    return attributeValue == null
-        ? fastNewBuilder(AttributeValue.Builder.class).setValue(defaultValue).build()
-        : attributeValue;
+    return attributeValue == null ? new AttributeValue().setValue(defaultValue) : attributeValue;
   }
 
   public static AttributeValue getAttributeValue(Event event, String attributeKey) {
@@ -49,20 +45,6 @@ public class SpanAttributeUtils {
     }
     if (event != null && event.getAttributes() != null) {
       return event.getAttributes().getAttributeMap().get(attributeKey);
-    }
-    return null;
-  }
-
-  public static AttributeValue getAttributeValue(Event.Builder eventBuilder, String attributeKey) {
-    if (eventBuilder.getEnrichedAttributes() != null) {
-      AttributeValue value =
-          eventBuilder.getEnrichedAttributes().getAttributeMap().get(attributeKey);
-      if (value != null) {
-        return value;
-      }
-    }
-    if (eventBuilder.getAttributes() != null) {
-      return eventBuilder.getAttributes().getAttributeMap().get(attributeKey);
     }
     return null;
   }
@@ -89,21 +71,6 @@ public class SpanAttributeUtils {
       return AttributeSearch.searchForAttributeIgnoreKeyCase(event.getAttributes(), attributeKey);
     }
     return Optional.empty();
-  }
-
-  @Nullable
-  public static String getStringAttribute(Event.Builder eventBuilder, String attributeKey) {
-    AttributeValue value = getAttributeValue(eventBuilder, attributeKey);
-    return value == null ? null : value.getValue();
-  }
-
-  public static boolean getBooleanAttribute(Event event, String attributeKey) {
-    AttributeValue value = getAttributeValue(event, attributeKey);
-    if (value == null) {
-      return false;
-    }
-
-    return Boolean.parseBoolean(value.getValue());
   }
 
   /**

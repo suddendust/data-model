@@ -96,20 +96,17 @@ public class StructuredTrace {
     return this;
   }
 
-  public StructuredTrace setEntityList(
-      List<Entity> entity_list) {
+  public StructuredTrace setEntityList(List<Entity> entity_list) {
     this.entity_list = entity_list;
     return this;
   }
 
-  public StructuredTrace setResourceList(
-      List<Resource> resource_list) {
+  public StructuredTrace setResourceList(List<Resource> resource_list) {
     this.resource_list = resource_list;
     return this;
   }
 
-  public StructuredTrace setEventList(
-      List<Event> event_list) {
+  public StructuredTrace setEventList(List<Event> event_list) {
     this.event_list = event_list;
     return this;
   }
@@ -134,38 +131,32 @@ public class StructuredTrace {
     return this;
   }
 
-  public StructuredTrace setEntityEdgeList(
-      List<Edge> entity_edge_list) {
+  public StructuredTrace setEntityEdgeList(List<Edge> entity_edge_list) {
     this.entity_edge_list = entity_edge_list;
     return this;
   }
 
-  public StructuredTrace setEventEdgeList(
-      List<Edge> event_edge_list) {
+  public StructuredTrace setEventEdgeList(List<Edge> event_edge_list) {
     this.event_edge_list = event_edge_list;
     return this;
   }
 
-  public StructuredTrace setEntityEventEdgeList(
-      List<Edge> entity_event_edge_list) {
+  public StructuredTrace setEntityEventEdgeList(List<Edge> entity_event_edge_list) {
     this.entity_event_edge_list = entity_event_edge_list;
     return this;
   }
 
-  public StructuredTrace setEntityEntityGraph(
-      Graph entity_entity_graph) {
+  public StructuredTrace setEntityEntityGraph(Graph entity_entity_graph) {
     this.entity_entity_graph = entity_entity_graph;
     return this;
   }
 
-  public StructuredTrace setEventEventGraph(
-      Graph event_event_graph) {
+  public StructuredTrace setEventEventGraph(Graph event_event_graph) {
     this.event_event_graph = event_event_graph;
     return this;
   }
 
-  public StructuredTrace setEntityEventGraph(
-      Graph entity_event_graph) {
+  public StructuredTrace setEntityEventGraph(Graph entity_event_graph) {
     this.entity_event_graph = entity_event_graph;
     return this;
   }
