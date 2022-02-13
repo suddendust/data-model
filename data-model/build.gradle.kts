@@ -1,9 +1,9 @@
 plugins {
   `java-library`
   jacoco
-  id("org.hypertrace.avro-plugin") version "0.3.1"
   id("org.hypertrace.publish-plugin")
   id("org.hypertrace.jacoco-report-plugin")
+  id("com.github.davidmc24.gradle.plugin.avro") version "1.3.0"
 }
 
 tasks.test {
